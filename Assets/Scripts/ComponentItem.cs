@@ -5,16 +5,24 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-public class InsButton : MonoBehaviour
+public enum ComponentType
 {
-    Button self;
+    Button,
+    Text,
+    Image
+}
+
+public class ComponentItem : MonoBehaviour
+{
+    RectTransform selfRect;
 
     List<OutLine> outLines = new List<OutLine>();
 
+    public ComponentType componentType;
 
     private void Awake()
     {
-        self = GetComponent<Button>();
+        selfRect = GetComponent<RectTransform>();
 
         Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         if (GameManager.Instance.GetGameMode() == GameManager.GameMode.Editor)
@@ -44,7 +52,7 @@ public class InsButton : MonoBehaviour
     {
         for (int i = 0; i < outLines.Count; i++)
         {
-            if(outLines[i].lineObj!=null)
+            if (outLines[i].lineObj != null)
                 DestroyImmediate(outLines[i].lineObj);
         }
         outLines.Clear();
@@ -87,8 +95,8 @@ public class InsButton : MonoBehaviour
     /// </summary>
     void Refresh()
     {
-        Rect rect = self.image.rectTransform.rect;
-        rect.position = (Vector2)self.image.rectTransform.position - rect.size / 2f;
+        Rect rect = selfRect.rect;
+        rect.position = (Vector2)selfRect.position - rect.size / 2f;
         points = new Vector2[5];
         GetCornerPoint(rect, out points[0], out points[1], out points[2], out points[3]);
     }
