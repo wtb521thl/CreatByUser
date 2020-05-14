@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,22 +8,46 @@ using UnityEngine.UI;
 public class InsButton : MonoBehaviour
 {
     Button self;
-    OutLine outLineUp;
-    OutLine outLineRight;
-    OutLine outLineDown;
-    OutLine outLineLeft ;
 
-    OutLine outPointLeftUp;
-    OutLine outPointRightUp;
-    OutLine outPointLeftDown;
-    OutLine outPointRightDown;
+    List<OutLine> outLines = new List<OutLine>();
+
+
     private void Awake()
     {
         self = GetComponent<Button>();
 
         Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+        if (GameManager.Instance.GetGameMode() == GameManager.GameMode.Editor)
+        {
+            InsOutLine();
+        }
+        EventCenter.AddListener<GameManager.GameMode>(EventSendType.ChangeGameMode, ChangeGameMode);
+    }
+    private void OnDestroy()
+    {
+        EventCenter.RemoveListener<GameManager.GameMode>(EventSendType.ChangeGameMode, ChangeGameMode);
+    }
+    private void ChangeGameMode(GameManager.GameMode gameMode)
+    {
+        if (gameMode == GameManager.GameMode.Editor)
+        {
+            InsOutLine();
+        }
+        if (gameMode == GameManager.GameMode.Game)
+        {
+            DeleteAllOutLines();
+        }
 
-        InsOutLine();
+    }
+
+    private void DeleteAllOutLines()
+    {
+        for (int i = 0; i < outLines.Count; i++)
+        {
+            if(outLines[i].lineObj!=null)
+                DestroyImmediate(outLines[i].lineObj);
+        }
+        outLines.Clear();
     }
 
     /// <summary>
@@ -30,41 +55,28 @@ public class InsButton : MonoBehaviour
     /// </summary>
     void InsOutLine()
     {
-        outLineUp = OutLineManager.Instance.GetOutLine("Up");
-        outLineRight = OutLineManager.Instance.GetOutLine("Right");
-        outLineDown = OutLineManager.Instance.GetOutLine("Down");
-        outLineLeft = OutLineManager.Instance.GetOutLine("Left");
-
-        outPointLeftUp = OutLineManager.Instance.GetOutLine("LeftUp");
-        outPointRightUp = OutLineManager.Instance.GetOutLine("RightUp");
-        outPointLeftDown = OutLineManager.Instance.GetOutLine("LeftDown");
-        outPointRightDown = OutLineManager.Instance.GetOutLine("RightDown");
-
-        outLineUp.Init(gameObject);
-        outLineRight.Init(gameObject);
-        outLineDown.Init(gameObject);
-        outLineLeft.Init(gameObject);
-
-        outPointLeftUp.Init(gameObject);
-        outPointRightUp.Init(gameObject);
-        outPointLeftDown.Init(gameObject);
-        outPointRightDown.Init(gameObject);
+        outLines.Add(OutLineManager.Instance.GetOutLine("Up"));
+        outLines.Add(OutLineManager.Instance.GetOutLine("Right"));
+        outLines.Add(OutLineManager.Instance.GetOutLine("Down"));
+        outLines.Add(OutLineManager.Instance.GetOutLine("Left"));
+        outLines.Add(OutLineManager.Instance.GetOutLine("LeftUp"));
+        outLines.Add(OutLineManager.Instance.GetOutLine("RightUp"));
+        outLines.Add(OutLineManager.Instance.GetOutLine("LeftDown"));
+        outLines.Add(OutLineManager.Instance.GetOutLine("RightDown"));
+        outLines.Add(OutLineManager.Instance.GetOutLine("Middle"));
+        for (int i = 0; i < outLines.Count; i++)
+        {
+            outLines[i].Init(gameObject);
+        }
     }
 
     private void Update()
     {
         Refresh();
-
-        outLineUp.RefreshRect(points, 5);
-        outLineRight.RefreshRect(points, 5);
-        outLineDown.RefreshRect(points, 5);
-        outLineLeft.RefreshRect(points, 5);
-
-        outPointLeftUp.RefreshRect(points, 5);
-        outPointRightUp.RefreshRect(points, 5);
-        outPointLeftDown.RefreshRect(points, 5);
-        outPointRightDown.RefreshRect(points, 5);
-
+        for (int i = 0; i < outLines.Count; i++)
+        {
+            outLines[i].RefreshRect(points, 5);
+        }
     }
     /// <summary>
     /// 物体的四个边界顶点

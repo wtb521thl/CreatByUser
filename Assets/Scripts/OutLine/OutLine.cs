@@ -29,7 +29,7 @@ public class OutLine: IOutLine
     /// 鼠标图片icon
     /// </summary>
     Texture2D enterIcon;
-    GameObject lineObj;
+    public GameObject lineObj;
     protected RectTransform lineObjRect;
 
     protected Vector2 startDragMousePos;
@@ -58,21 +58,26 @@ public class OutLine: IOutLine
     public virtual void Init(GameObject go)
     {
         selfRect = go.GetComponent<RectTransform>();
-
         outLinePrefab = Resources.Load<GameObject>("Prefabs/OutLine");
         enterIcon = Resources.Load<Texture2D>("Texture/MouseEnterIcon");
         lineObj = GameObject.Instantiate(outLinePrefab, selfRect);
         lineObj.name = insLineName;
         lineObjRect = lineObj.GetComponent<RectTransform>();
-
         EventTriggerListener.Get(lineObj).OnMouseDrag = DragLine;
         EventTriggerListener.Get(lineObj).OnMouseBeginDrag = BeginDragLine;
         EventTriggerListener.Get(lineObj).OnMouseEndDrag = EndDragLine;
         EventTriggerListener.Get(lineObj).OnMouseEnter = EnterLine;
         EventTriggerListener.Get(lineObj).OnMouseExit = ExitLine;
+        EventTriggerListener.Get(lineObj).OnMouseClick = ClickAction;
         isInit = true;
 
     }
+
+    private void ClickAction()
+    {
+        GameManager.Instance.selectGameobject = selfRect.gameObject;
+    }
+
     /// <summary>
     /// updata中刷新调用（后续可添加颜色、材质球等属性）
     /// </summary>

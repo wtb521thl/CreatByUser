@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 #region 四周的线
@@ -235,5 +236,42 @@ public class OutPointLeftDown : OutLine
         selfRect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, startDragObjPosY, newObjDisY);
     }
 }
+
+#endregion
+
+
+#region 中间移动部分
+
+
+public class OutMoveMiddle : OutLine
+{
+
+    protected override void SetAnchoredPos()
+    {
+        selfRect.anchorMax = new Vector2(0.5f, 0.5f);
+        selfRect.anchorMin = new Vector2(0.5f, 0.5f);
+    }
+
+    public override void RefreshRect(Vector2[] points, float lineWidth)
+    {
+        lineObjRect.sizeDelta = new Vector2(Mathf.Abs(points[1].x - points[0].x), Mathf.Abs(points[1].y - points[2].y));
+        lineObjRect.position = (points[0] + points[2])/2f;
+        Image tempImage = lineObjRect.GetComponent<Image>();
+        tempImage.color = new Color(tempImage.color.r, tempImage.color.g, tempImage.color.b, 0);
+    }
+    Vector2 startDragPos;
+    protected override void GetStartDragObjPos()
+    {
+        startDragPos = selfRect.position;
+    }
+
+    Vector2 offset;
+    protected override void DragLine()
+    {
+        offset = new Vector2(Input.mousePosition.x - startDragMousePos.x, Input.mousePosition.y - startDragMousePos.y);
+        selfRect.position = startDragPos+offset;
+    }
+}
+
 
 #endregion

@@ -34,6 +34,9 @@ public class OutLineManager : SingleMono<OutLineManager>
             case "LeftDown":
                 outLine = new OutPointLeftDown();
                 break;
+            case "Middle":
+                outLine = new OutMoveMiddle();
+                break;
             default:
                 outLine = null;
                 break;
