@@ -112,7 +112,7 @@ public class OutLine: IOutLine
     /// </summary>
     void BeginDragLine()
     {
-
+        //SendCommand();
         isDrag = true;
         startDragMousePos = Input.mousePosition;
 
@@ -124,6 +124,7 @@ public class OutLine: IOutLine
         SetAnchoredPos(); //更改锚点设置
         selfRect.ForceUpdateRectTransforms();//强制刷新下
         selfRect.position = worldPos;
+        SendCommand(selfRect.position,selfRect.sizeDelta);
         GetStartDragObjPos();
     }
     /// <summary>
@@ -153,9 +154,21 @@ public class OutLine: IOutLine
     void EndDragLine()
     {
         isDrag = false;
+
+
     }
 
 
+    private void SendCommand(Vector2 endPos,Vector2 sizeDelte)
+    {
+        RectReciver reciver = new RectReciver();
+        reciver.selfRect = selfRect;
+        reciver.endPos = endPos;
+        reciver.endSizeDelte = sizeDelte;
+        Command c = new Command(reciver);
+        CommadManager.Instance.AddCommand(c);
+        CommadManager.Instance.ExcuteCommand();
+    }
 }
 
 public interface IOutLine
