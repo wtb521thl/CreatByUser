@@ -1,1 +1,2 @@
-# UnityWriteUnity
+# 使用unity做一个unity
+目前使用了工厂模式，单例模式，命令模式，观察者模式去实现相应的功能
