@@ -2,58 +2,51 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Reflection;
+using Inspector;
 
 public class InspectorPanel : MonoBehaviour
 {
-    GameObject selectObj;
-
-    GameObject oneValue;
-    GameObject twoValue;
-    GameObject selectValue;
-
     public Transform contentArea;
     private void Awake()
-    {
-        oneValue = Resources.Load<GameObject>("Prefabs/InspectorItemType/OneValue");
-        twoValue = Resources.Load<GameObject>("Prefabs/InspectorItemType/TwoValue");
-        selectValue = Resources.Load<GameObject>("Prefabs/InspectorItemType/SelectValue");
-
-    }
-    private void Update()
     {
         Refresh();
     }
 
+
     void Refresh()
     {
-        selectObj = GameManager.Instance.selectGameobject;
-        if (selectObj != null)
+        if (GameManager.Instance.selectGameobject != null)
         {
             for (int i = contentArea.childCount - 1; i >= 0; i--)
             {
                 DestroyImmediate(contentArea.GetChild(i).gameObject);
             }
-            switch (selectObj.GetComponent<ComponentItem>().componentType)
+
+
+
+            ////反射获取 代替switch
+            //string tempStr = "Inspector" + GameManager.Instance.selectGameobject.GetComponent<ComponentItem>().componentType.ToString();
+            //Assembly assembly = Assembly.Load("Inspector");
+            //object obj = assembly.CreateInstance("Inspector." + tempStr);
+            //InspectorItem inspectorItem = (InspectorItem)obj;
+            //inspectorItem.Init(contentArea, GameManager.Instance.selectGameobject);
+
+
+            switch (GameManager.Instance.selectGameobject.GetComponent<ComponentItem>().componentType)
             {
                 case ComponentType.Button:
-                    GameObject tempBtnName = Instantiate(oneValue, contentArea);
-                    tempBtnName.transform.Find("Title").GetComponent<Text>().text = "Name";
-                    GameObject tempBtnPos = Instantiate(twoValue, contentArea);
-                    tempBtnPos.transform.Find("Title").GetComponent<Text>().text = "Position";
-                    GameObject tempBtnAction = Instantiate(oneValue, contentArea);
-                    tempBtnName.transform.Find("Title").GetComponent<Text>().text = "Action";
+                    InspectorItem inspectorItemBtn = new InspectorButton();
+                    inspectorItemBtn.Init(contentArea, GameManager.Instance.selectGameobject);
                     break;
                 case ComponentType.Text:
-                    GameObject tempTextName = Instantiate(oneValue, contentArea);
-                    tempTextName.transform.Find("Title").GetComponent<Text>().text = "Name";
-                    GameObject tempTextPos = Instantiate(twoValue, contentArea);
-                    tempTextPos.transform.Find("Title").GetComponent<Text>().text = "Position";
+
+                    InspectorItem inspectorItemText = new InspectorText();
+                    inspectorItemText.Init(contentArea, GameManager.Instance.selectGameobject);
                     break;
                 case ComponentType.Image:
-                    GameObject tempImageName = Instantiate(oneValue, contentArea);
-                    tempImageName.transform.Find("Title").GetComponent<Text>().text = "Name";
-                    GameObject tempImagePos = Instantiate(twoValue, contentArea);
-                    tempImagePos.transform.Find("Title").GetComponent<Text>().text = "Position";
+                    InspectorItem inspectorItemImage = new InspectorImage();
+                    inspectorItemImage.Init(contentArea, GameManager.Instance.selectGameobject);
                     break;
             }
         }

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class UiManager : MonoBehaviour
@@ -10,6 +11,8 @@ public class UiManager : MonoBehaviour
     Text changeModeBtnText;
 
     GameObject inspectorPanel;
+
+
     private void Start()
     {
         changeModeBtn.onClick.AddListener(ChangeMode);
@@ -17,6 +20,41 @@ public class UiManager : MonoBehaviour
         EventCenter.AddListener<GameManager.GameMode>(EventSendType.ChangeGameMode, ChangeGameMode);
         RefreshBtnText();
     }
+    private void Update()
+    {
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (IsOverSelectGameobj(GameManager.Instance.selectGameobject))
+            {
+                ShowInspectorPanel();
+            }
+            else if (!IsOverSelectGameobj(inspectorPanel.gameObject))
+            {
+                CloseInspectorPanel();
+            }
+        }
+
+    }
+    PointerEventData pointerEventData;
+    List<RaycastResult> raycastResults = new List<RaycastResult>();
+    public bool IsOverSelectGameobj(GameObject tempGo)
+    {
+        pointerEventData = new PointerEventData(EventSystem.current);
+        pointerEventData.position = Input.mousePosition;
+        EventSystem.current.RaycastAll(pointerEventData, raycastResults);
+
+        for (int i = 0; i < raycastResults.Count; i++)
+        {
+            if (raycastResults[i].gameObject == tempGo)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private void OnDestroy()
     {
         EventCenter.RemoveListener<GameManager.GameMode>(EventSendType.ChangeGameMode, ChangeGameMode);

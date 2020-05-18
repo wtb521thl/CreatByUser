@@ -57,7 +57,7 @@ public class RightMousePanel : MonoBehaviour
     void Update()
     {
 
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(1)&&!EventSystem.current.IsPointerOverGameObject())
         {
             InitObj();
             mousePos = (Vector2)Input.mousePosition;
