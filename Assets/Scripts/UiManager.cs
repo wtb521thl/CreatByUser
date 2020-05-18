@@ -20,7 +20,7 @@ public class UiManager : MonoBehaviour
         EventCenter.AddListener<GameManager.GameMode>(EventSendType.ChangeGameMode, ChangeGameMode);
         RefreshBtnText();
     }
-    private void Update()
+    private void LateUpdate()
     {
 
         if (Input.GetMouseButtonDown(0))

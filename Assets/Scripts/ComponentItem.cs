@@ -30,11 +30,63 @@ public class ComponentItem : MonoBehaviour
             InsOutLine();
         }
         EventCenter.AddListener<GameManager.GameMode>(EventSendType.ChangeGameMode, ChangeGameMode);
+        EventCenter.AddListener<GameObject, string, string>(EventSendType.InspectorChange, ChangeInspectorAction);
+
+        switch (componentType)
+        {
+            case ComponentType.Button:
+                GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    GameObject.Find(GameManager.Instance.GetInspectorData()["ActionObject"]).SendMessage(GameManager.Instance.GetInspectorData()["Action"]);
+                });
+                break;
+            case ComponentType.Text:
+                break;
+            case ComponentType.Image:
+                break;
+            default:
+                break;
+        }
     }
+
+
     private void OnDestroy()
     {
         EventCenter.RemoveListener<GameManager.GameMode>(EventSendType.ChangeGameMode, ChangeGameMode);
+        EventCenter.RemoveListener<GameObject, string, string>(EventSendType.InspectorChange, ChangeInspectorAction);
     }
+
+    private void ChangeInspectorAction(GameObject arg1, string arg2, string arg3)
+    {
+        if (arg1 == gameObject)
+        {
+            switch (arg2)
+            {
+                case "Name":
+                    transform.name = arg3;
+                    break;
+                case "PosVectorX":
+                    transform.position = new Vector2(float.Parse(arg3), transform.position.y);
+                    break;
+                case "PosVectorY":
+                    transform.position = new Vector2(transform.position.x, float.Parse(arg3));
+                    break;
+                case "Action":
+                    
+                    break;
+                case "ActionObject":
+
+                    break;
+            }
+            GameManager.Instance.SetInspectorData(arg2, arg3);
+        }
+    }
+
+    public void Action()
+    {
+        Debug.Log("Action");
+    }
+
     private void ChangeGameMode(GameManager.GameMode gameMode)
     {
         if (gameMode == GameManager.GameMode.Editor)

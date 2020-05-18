@@ -50,6 +50,8 @@ public class RightMousePanel : MonoBehaviour
         if (tempInstanceObjResource != null)
         {
             GameObject tempInstanceObj = Instantiate(tempInstanceObjResource, objContainer);
+            
+            tempInstanceObj.name = GameManager.Instance.GetInspectorData()["Name"]+ ","+ GameManager.Instance.GetInspectorData()["Action"];
             tempInstanceObj.GetComponent<RectTransform>().position = Input.mousePosition;
         }
     }

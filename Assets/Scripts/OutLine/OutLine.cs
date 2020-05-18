@@ -68,7 +68,7 @@ public class OutLine: IOutLine
         EventTriggerListener.Get(lineObj).OnMouseEndDrag = EndDragLine;
         EventTriggerListener.Get(lineObj).OnMouseEnter = EnterLine;
         EventTriggerListener.Get(lineObj).OnMouseExit = ExitLine;
-        EventTriggerListener.Get(lineObj).OnMouseClick = ClickAction;
+        EventTriggerListener.Get(lineObj).OnMouseDown = ClickAction;
         isInit = true;
 
     }
