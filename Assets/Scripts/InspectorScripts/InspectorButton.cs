@@ -11,8 +11,8 @@ namespace Inspector
         InputField nameInputField;
         InputField vectorXInputField;
         InputField vectorYInputField;
-        InputField actionInputField;
-        Dropdown actionDropdown;
+        Dropdown actionDropDown;
+        Dropdown actionObjDropdown;
 
         public override void Init(Transform contentArea, GameObject _selectObj)
         {
@@ -28,19 +28,29 @@ namespace Inspector
 
             vectorYInputField = tempBtnPos.transform.Find("InputVectorY").GetComponent<InputField>();
 
-            GameObject tempBtnAction = GameObject.Instantiate(inspectorPanel.oneValue, contentArea);
+            GameObject tempBtnAction = GameObject.Instantiate(inspectorPanel.selectValue, contentArea);
             tempBtnAction.transform.Find("Title").GetComponent<Text>().text = "Action";
-            actionInputField = tempBtnAction.GetComponentInChildren<InputField>();
+            actionDropDown = tempBtnAction.GetComponentInChildren<Dropdown>();
 
             GameObject tempActionObj = GameObject.Instantiate(inspectorPanel.selectValue, contentArea);
             tempActionObj.transform.Find("Title").GetComponent<Text>().text = "ActionObject";
-            actionDropdown = tempActionObj.GetComponentInChildren<Dropdown>();
+            actionObjDropdown = tempActionObj.GetComponentInChildren<Dropdown>();
 
 
             RefreshValue();
 
             InitCommand();
 
+            InitEvent();
+
+        }
+        void InitEvent() {
+            //赋值后刷新事件
+            NameInputFieldChangeValue(nameInputField.text);
+            VectorXInputFieldChangeValue(vectorXInputField.text);
+            VectorYInputFieldChangeValue(vectorYInputField.text);
+            ActionDropDownChangeValue(actionDropDown.value);
+            ActionObjDropdownChangeValue(actionObjDropdown.value);
         }
 
         private void InitCommand()
@@ -48,8 +58,9 @@ namespace Inspector
             InitInputFieldCommand(nameInputField, NameInputFieldChangeValue);
             InitInputFieldCommand(vectorXInputField, VectorXInputFieldChangeValue);
             InitInputFieldCommand(vectorYInputField, VectorYInputFieldChangeValue);
-            InitInputFieldCommand(actionInputField, ActionInputFieldChangeValue);
-            InitDropDownCommand(actionDropdown);
+            InitDropDownCommand(actionDropDown, ActionDropDownChangeValue);
+            InitDropDownCommand(actionObjDropdown, ActionObjDropdownChangeValue);
+
         }
 
         public override void RefreshValue()
@@ -57,15 +68,23 @@ namespace Inspector
             nameInputField.text = selectObj.name;
             vectorXInputField.text = selectObj.transform.position.x.ToString();
             vectorYInputField.text = selectObj.transform.position.y.ToString();
-            actionInputField.text = componentItem.actionStr;
+
+            List<Dropdown.OptionData> ods = new List<Dropdown.OptionData>();
+            for (int i = 0; i < UiManager.Instance.allMethods.Count; i++)
+            {
+                ods.Add(new Dropdown.OptionData(UiManager.Instance.allMethods[i]));
+            }
+            actionDropDown.options = ods;
+            actionDropDown.SetValueWithoutNotify(string.IsNullOrEmpty(componentItem.actionStr) ?0: UiManager.Instance.allMethods.IndexOf(componentItem.actionStr));
+
             List<Dropdown.OptionData> ts = new List<Dropdown.OptionData>();
             for (int i = 0; i < selectObj.transform.parent.childCount; i++)
             {
                 ts.Add(new Dropdown.OptionData(selectObj.transform.parent.GetChild(i).name));
             }
-            actionDropdown.options = ts;
+            actionObjDropdown.options = ts;
+            actionObjDropdown.SetValueWithoutNotify(UiManager.Instance.GetGameObjectById(string.IsNullOrEmpty(componentItem.actionObjId) ? componentItem.timeID : componentItem.actionObjId).transform.GetSiblingIndex());
 
-            actionDropdown.SetValueWithoutNotify(UiManager.Instance.GetGameObjectById(string.IsNullOrEmpty(componentItem.actionObjId) ? componentItem.timeID : componentItem.actionObjId).transform.GetSiblingIndex());
         }
 
         void InitInputFieldCommand(InputField inputField, Action<string> tempAction)
@@ -79,13 +98,14 @@ namespace Inspector
                 ExcuteCommand();
             });
         }
-        int lastDropDownValue=0;
-        void InitDropDownCommand(Dropdown dropdown)
+  
+        void InitDropDownCommand(Dropdown dropdown,Action<int> tempAction)
         {
+            int lastDropDownValue = 0;
             lastDropDownValue = dropdown.value;
             dropdown.onValueChanged.AddListener((index) =>
             {
-                SendCommand(dropdown, index);
+                SendCommand(dropdown, index, lastDropDownValue, tempAction);
                 ExcuteCommand();
                 lastDropDownValue = dropdown.value;
             });
@@ -107,12 +127,12 @@ namespace Inspector
             EventCenter.BroadcastEvent<GameObject, string, string>(EventSendType.InspectorChange, selectObj, "PosVectorY", arg0);
         }
 
-        private void ActionInputFieldChangeValue(string arg0)
+        private void ActionDropDownChangeValue(int arg0)
         {
-            EventCenter.BroadcastEvent<GameObject, string, string>(EventSendType.InspectorChange, selectObj, "Action", arg0);
+            EventCenter.BroadcastEvent<GameObject, string, string>(EventSendType.InspectorChange, selectObj, "Action", UiManager.Instance.allMethods[arg0]);
         }
 
-        private void ActionDropdownChangeValue(int arg0)
+        private void ActionObjDropdownChangeValue(int arg0)
         {
             EventCenter.BroadcastEvent<GameObject, string, string>(EventSendType.InspectorChange, selectObj, "ActionObject", selectObj.transform.parent.GetChild(arg0).GetComponent<ComponentItem>().timeID);
 
@@ -135,11 +155,11 @@ namespace Inspector
             CommadManager.Instance.AddCommand(c);
         }
 
-        public void SendCommand(Dropdown dropdown, int value)
+        public void SendCommand(Dropdown dropdown, int value,int lastDropDownValue, Action<int> tempAction)
         {
             DropdownReciver reciver = new DropdownReciver();
-            reciver.DoAction = ActionDropdownChangeValue;
-            reciver.UnDoAction = ActionDropdownChangeValue;
+            reciver.DoAction = tempAction;
+            reciver.UnDoAction = tempAction;
             reciver.dropdown = dropdown;
             reciver.startValue = lastDropDownValue;
             reciver.value = value;

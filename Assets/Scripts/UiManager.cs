@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Reflection;
 
 public class UiManager : SingleMono<UiManager>
 {
@@ -35,6 +36,8 @@ public class UiManager : SingleMono<UiManager>
     /// </summary>
     public RectTransform objContainer;
 
+    public List<string> allMethods = new List<string>();
+
     private void Start()
     {
         changeModeBtn.onClick.AddListener(ChangeMode);
@@ -43,15 +46,34 @@ public class UiManager : SingleMono<UiManager>
         changeModeBtnText = changeModeBtn.GetComponentInChildren<Text>();
         EventCenter.AddListener<GameManager.GameMode>(EventSendType.ChangeGameMode, ChangeGameMode);
         RefreshBtnText();
+        GetActions();
+    }
+
+    void GetActions()
+    {
+        Assembly ass = Assembly.GetAssembly(typeof(AllComponentMethods));
+
+        for (int i = 0; i < ass.GetTypes().Length; i++)
+        {
+            if (ass.GetTypes()[i] == typeof(AllComponentMethods))
+            {
+                for (int j = 0; j < ass.GetTypes()[i].GetMethods().Length; j++)
+                {
+                    allMethods.Add(ass.GetTypes()[i].GetMethods()[j].Name);
+                }
+            }
+        }
+
+
     }
 
     public GameObject GetGameObjectById(string Id)
     {
-        GameObject go=null;
+        GameObject go = null;
         ComponentItem[] componentItems = objContainer.GetComponentsInChildren<ComponentItem>();
         for (int i = 0; i < componentItems.Length; i++)
         {
-           if (componentItems[i].timeID == Id)
+            if (componentItems[i].timeID == Id)
             {
                 go = componentItems[i].gameObject;
             }
@@ -72,15 +94,15 @@ public class UiManager : SingleMono<UiManager>
         }
         for (int i = 0; i < data.Count; i++)
         {
-            GameObject tempInstanceObjResource =ResourceManager.Instance.GetGameobject( PathStatic.PrefabsComponentsPath + data[i]["Type"].ToJson().Trim('"'));
+            GameObject tempInstanceObjResource = ResourceManager.Instance.GetGameobject(PathStatic.PrefabsComponentsPath + data[i]["Type"].ToJson().Trim('"'));
             if (tempInstanceObjResource != null)
             {
                 GameObject tempInstanceObj = Instantiate(tempInstanceObjResource, objContainer);
-                ComponentItem componentItem= tempInstanceObj.GetOrAddComponent<ComponentItem>();
+                ComponentItem componentItem = tempInstanceObj.GetOrAddComponent<ComponentItem>();
                 componentItem.timeID = data[i]["TimeId"].ToJson().Trim('"');
                 componentItem.actionObjId = data[i]["ActionObj"].ToJson().Trim('"');
                 componentItem.actionStr = data[i]["Action"].ToJson().Trim('"');
-                tempInstanceObj.GetComponent<RectTransform>().position =new Vector2(float.Parse(data[i]["PosX"].ToJson().Trim('"')),float.Parse(data[i]["PosY"].ToJson().Trim('"')));
+                tempInstanceObj.GetComponent<RectTransform>().position = new Vector2(float.Parse(data[i]["PosX"].ToJson().Trim('"')), float.Parse(data[i]["PosY"].ToJson().Trim('"')));
                 tempInstanceObj.name = data[i]["Name"].ToJson().Trim('"');
             }
         }
@@ -100,7 +122,7 @@ public class UiManager : SingleMono<UiManager>
             data["Type"] = componentItems[i].componentType.ToString();
             data["ActionObj"] = componentItems[i].actionObjId;
             data["Action"] = componentItems[i].actionStr;
-            keyData.Add( data);
+            keyData.Add(data);
         }
         DataManager.Instance.SaveDataToFile(keyData, PathStatic.LayoutJsonPath);
     }
