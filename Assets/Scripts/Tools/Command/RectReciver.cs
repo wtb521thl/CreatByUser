@@ -23,3 +23,56 @@ public class RectReciver: IReciver
         selfRect.sizeDelta = startSizeDelte;
     }
 }
+
+
+public class InputFieldReciver : IReciver
+{
+    public UnityEngine.UI.InputField inputText;
+
+    public System.Action<string> DoAction;
+    public System.Action<string> UnDoAction;
+
+
+    public string value;
+
+    public string startValue;
+
+    public void Action()
+    {
+        inputText.SetTextWithoutNotify(value);
+        DoAction?.Invoke(value);
+    }
+
+    public void UndoAction()
+    {
+        inputText.SetTextWithoutNotify(startValue);
+        UnDoAction?.Invoke(startValue);
+    }
+}
+
+
+
+public class DropdownReciver : IReciver
+{
+    public UnityEngine.UI.Dropdown dropdown;
+
+    public System.Action<int> DoAction;
+    public System.Action<int> UnDoAction;
+
+
+    public int value;
+
+    public int startValue;
+
+    public void Action()
+    {
+        dropdown.SetValueWithoutNotify(value);
+        DoAction?.Invoke(value);
+    }
+
+    public void UndoAction()
+    {
+        dropdown.SetValueWithoutNotify(startValue);
+        UnDoAction?.Invoke(startValue);
+    }
+}

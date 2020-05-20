@@ -4,23 +4,53 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Reflection;
 using Inspector;
+using System;
 
 public class InspectorPanel : MonoBehaviour
 {
     public Transform contentArea;
+
+    public GameObject oneValue;
+    public GameObject twoValue;
+    public GameObject selectValue;
+
+    InspectorItem inspectorItem;
+
     private void Awake()
+    {
+        Init();
+        InitItem();
+        EventCenter.AddListener<GameObject, string, string>(EventSendType.InspectorChange, InspectorChange);
+    }
+    /// <summary>
+    /// 初始化预设
+    /// </summary>
+    void Init()
+    {
+        oneValue = ResourceManager.Instance.GetGameobject(PathStatic.InspectorItemTypePath+ "OneValue");
+        twoValue = ResourceManager.Instance.GetGameobject(PathStatic.InspectorItemTypePath + "TwoValue");
+        selectValue = ResourceManager.Instance.GetGameobject(PathStatic.InspectorItemTypePath + "SelectValue");
+    }
+
+    private void InspectorChange(GameObject arg1, string arg2, string arg3)
     {
         Refresh();
     }
 
-
-    void Refresh()
+    private void OnDestroy()
+    {
+        EventCenter.RemoveListener<GameObject, string, string>(EventSendType.InspectorChange, InspectorChange);
+    }
+    /// <summary>
+    /// 根据选中物体生成对应的结构
+    /// </summary>
+    void InitItem()
     {
         if (GameManager.Instance.selectGameobject != null)
         {
             for (int i = contentArea.childCount - 1; i >= 0; i--)
             {
-                DestroyImmediate(contentArea.GetChild(i).gameObject);
+                Destroy(contentArea.GetChild(i).gameObject);
             }
 
 
@@ -36,19 +66,25 @@ public class InspectorPanel : MonoBehaviour
             switch (GameManager.Instance.selectGameobject.GetComponent<ComponentItem>().componentType)
             {
                 case ComponentType.Button:
-                    InspectorItem inspectorItemBtn = new InspectorButton();
-                    inspectorItemBtn.Init(contentArea, GameManager.Instance.selectGameobject);
+                    inspectorItem = new InspectorButton();
                     break;
                 case ComponentType.Text:
-
-                    InspectorItem inspectorItemText = new InspectorText();
-                    inspectorItemText.Init(contentArea, GameManager.Instance.selectGameobject);
+                    inspectorItem = new InspectorText();
                     break;
                 case ComponentType.Image:
-                    InspectorItem inspectorItemImage = new InspectorImage();
-                    inspectorItemImage.Init(contentArea, GameManager.Instance.selectGameobject);
+                    inspectorItem = new InspectorImage();
                     break;
             }
+            inspectorItem.Init(contentArea, GameManager.Instance.selectGameobject);
+        }
+    }
+
+
+    void Refresh()
+    {
+        if (GameManager.Instance.selectGameobject != null)
+        {
+            inspectorItem.RefreshValue();
         }
     }
 }

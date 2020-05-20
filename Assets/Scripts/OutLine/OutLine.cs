@@ -75,6 +75,7 @@ public class OutLine: IOutLine
 
     private void ClickAction()
     {
+        GameManager.Instance.lastSelectGameObject = GameManager.Instance.selectGameobject;
         GameManager.Instance.selectGameobject = selfRect.gameObject;
     }
 

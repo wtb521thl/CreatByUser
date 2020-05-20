@@ -21,7 +21,7 @@ public class CommadManager : SingleMono<CommadManager>
     /// <summary>
     /// 点击下一步的时候执行的命令
     /// </summary>
-    public Queue<ICommand> nextCommands = new Queue<ICommand>();
+    public Stack<ICommand> nextCommands = new Stack<ICommand>();
 
     /// <summary>
     /// 用户新加命令
@@ -34,7 +34,10 @@ public class CommadManager : SingleMono<CommadManager>
         {
             nextCommands.Clear();
         }
-
+        if (commands.Count > maxCommand)
+        {
+            commands.Dequeue();
+        }
         commands.Enqueue(command);
 
     }
@@ -46,9 +49,13 @@ public class CommadManager : SingleMono<CommadManager>
 
         if (nextCommands.Count > 0)
         {
-            ICommand tempNextCommand = nextCommands.Dequeue();
+            ICommand tempNextCommand = nextCommands.Pop();
 
             tempNextCommand.ExcuteCommand();
+            if (unDoCommands.Count > maxCommand)
+            {
+                unDoCommands.Pop();
+            }
             unDoCommands.Push(tempNextCommand);//执行完的命令放到撤销栈中
             return;
         }
@@ -62,7 +69,29 @@ public class CommadManager : SingleMono<CommadManager>
         ICommand tempCommand= commands.Dequeue();
 
         tempCommand.ExcuteCommand();
+        if (unDoCommands.Count > maxCommand)
+        {
+            unDoCommands.Pop();
+        }
         unDoCommands.Push(tempCommand);//执行完的命令放到撤销栈中
+    }
+
+    public void ExcuteAllCommand()
+    {
+
+        int tempI = commands.Count;
+        for (int i = 0; i < tempI; i++)
+        {
+
+            ICommand tempCommand = commands.Dequeue();
+
+            tempCommand.ExcuteCommand();
+            if (unDoCommands.Count > maxCommand)
+            {
+                unDoCommands.Pop();
+            }
+            unDoCommands.Push(tempCommand);//执行完的命令放到撤销栈中
+        }
     }
 
     /// <summary>
@@ -77,7 +106,11 @@ public class CommadManager : SingleMono<CommadManager>
         }
         ICommand tempCommand = unDoCommands.Pop();
         tempCommand.UndoCommand();
-        nextCommands.Enqueue(tempCommand);//撤销完成的命令放回执行命令栈中，以便点击下一步的时候继续操作
+        if (nextCommands.Count > maxCommand)
+        {
+            nextCommands.Pop();
+        }
+        nextCommands.Push(tempCommand);//撤销完成的命令放回执行命令栈中，以便点击下一步的时候继续操作
     }
 
 

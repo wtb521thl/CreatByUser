@@ -12,10 +12,10 @@ namespace Inspector
         {
             base.Init(contentArea, _selectObj);
 
-            GameObject tempImageName = GameObject.Instantiate(oneValue, contentArea);
+            GameObject tempImageName = GameObject.Instantiate(inspectorPanel.oneValue, contentArea);
             tempImageName.transform.Find("Title").GetComponent<Text>().text = "Name";
             tempImageName.GetComponentInChildren<InputField>().text = selectObj.name;
-            GameObject tempImagePos = GameObject.Instantiate(twoValue, contentArea);
+            GameObject tempImagePos = GameObject.Instantiate(inspectorPanel.twoValue, contentArea);
             tempImagePos.transform.Find("Title").GetComponent<Text>().text = "Position";
             tempImagePos.transform.Find("InputVectorX").GetComponent<InputField>().text = selectObj.transform.position.x.ToString();
             tempImagePos.transform.Find("InputVectorY").GetComponent<InputField>().text = selectObj.transform.position.y.ToString();

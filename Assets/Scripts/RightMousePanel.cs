@@ -6,33 +6,34 @@ using UnityEngine.UI;
 
 public class RightMousePanel : MonoBehaviour
 {
-    public string[] btnsName;
     RectTransform rightMousePanel;
     GameObject btnItem;
-    public RectTransform objContainer;
+
     void InitObj()
     {
         if (rightMousePanel == null)
         {
-            rightMousePanel = Instantiate(Resources.Load<GameObject>("Prefabs/RightMousePanel"), transform).GetComponent<RectTransform>();
+            rightMousePanel = Instantiate(ResourceManager.Instance.GetGameobject(PathStatic.RightMousePanelPrefab), transform).GetComponent<RectTransform>();
         }
         if (btnItem == null)
         {
-            btnItem = Resources.Load<GameObject>("Prefabs/Button");
+            btnItem = ResourceManager.Instance.GetGameobject(PathStatic.ButtonPrefab);
         }
         for (int i = rightMousePanel.childCount - 1; i >= 0; i--)
         {
             Destroy(rightMousePanel.GetChild(i).gameObject);
         }
-        for (int i = 0; i < btnsName.Length; i++)
+
+        //生成右键菜单
+        for (int i = 0; i < GameManager.Instance.rightButtonsName.Length; i++)
         {
-            GameObject tempBtnObj = Instantiate(Resources.Load<GameObject>("Prefabs/RightMousePanelButton"), rightMousePanel);
-            tempBtnObj.name = btnsName[i];
+            GameObject tempBtnObj = Instantiate(ResourceManager.Instance.GetGameobject(PathStatic.RightMousePanelButtonPrefab), rightMousePanel);
+            tempBtnObj.name = GameManager.Instance.rightButtonsName[i];
             Button tempBtn = tempBtnObj.GetComponent<Button>();
             tempBtn.GetComponentInChildren<Text>().text = tempBtnObj.name;
             tempBtn.onClick.AddListener(() =>
             {
-                InstanceObj(tempBtnObj);
+                InstanceComponentObj(tempBtnObj);
                 DestroyRightMousePanel();
             });
         }
@@ -41,25 +42,28 @@ public class RightMousePanel : MonoBehaviour
     {
         if (rightMousePanel != null)
         {
-            Destroy(rightMousePanel.gameObject);
+            DestroyImmediate(rightMousePanel.gameObject);
         }
     }
-    void InstanceObj(GameObject go)
+    /// <summary>
+    /// 生成组件
+    /// </summary>
+    /// <param name="go"></param>
+    void InstanceComponentObj(GameObject go)
     {
-        GameObject tempInstanceObjResource = Resources.Load<GameObject>("Prefabs/" + go.name);
+        GameObject tempInstanceObjResource = ResourceManager.Instance.GetGameobject(PathStatic.PrefabsComponentsPath + go.name);
         if (tempInstanceObjResource != null)
         {
-            GameObject tempInstanceObj = Instantiate(tempInstanceObjResource, objContainer);
-            
-            tempInstanceObj.name = GameManager.Instance.GetInspectorData()["Name"]+ ","+ GameManager.Instance.GetInspectorData()["Action"];
+            GameObject tempInstanceObj = Instantiate(tempInstanceObjResource,UiManager.Instance.objContainer);
             tempInstanceObj.GetComponent<RectTransform>().position = Input.mousePosition;
+            tempInstanceObj.name = go.name;
         }
     }
     Vector2 mousePos;
     void Update()
     {
 
-        if (Input.GetMouseButtonDown(1)&&!EventSystem.current.IsPointerOverGameObject())
+        if (Input.GetMouseButtonDown(1) && !EventSystem.current.IsPointerOverGameObject())
         {
             InitObj();
             mousePos = (Vector2)Input.mousePosition;

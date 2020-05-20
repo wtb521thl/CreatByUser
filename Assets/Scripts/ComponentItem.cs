@@ -12,7 +12,7 @@ public enum ComponentType
     Image
 }
 
-public class ComponentItem : MonoBehaviour
+public class ComponentItem : MonoBehaviour,AllComponentMethods
 {
     RectTransform selfRect;
 
@@ -20,8 +20,23 @@ public class ComponentItem : MonoBehaviour
 
     public ComponentType componentType;
 
+    /// <summary>
+    /// 时间ID区分物体
+    /// </summary>
+    public string timeID;
+
+    /// <summary>
+    /// 时间执行对象Id
+    /// </summary>
+    public string actionObjId;
+    /// <summary>
+    /// 事件名称
+    /// </summary>
+    public string actionStr;
+
     private void Awake()
     {
+        timeID = DateTime.Now.Ticks.ToString();
         selfRect = GetComponent<RectTransform>();
 
         Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
@@ -37,7 +52,14 @@ public class ComponentItem : MonoBehaviour
             case ComponentType.Button:
                 GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    GameObject.Find(GameManager.Instance.GetInspectorData()["ActionObject"]).SendMessage(GameManager.Instance.GetInspectorData()["Action"]);
+                    if (!string.IsNullOrEmpty(actionObjId) && !string.IsNullOrEmpty(actionStr))
+                    {
+                        UiManager.Instance.GetGameObjectById(actionObjId).SendMessage(actionStr);
+                    }
+                    else
+                    {
+                        Debug.Log("发送事件失败");
+                    }
                 });
                 break;
             case ComponentType.Text:
@@ -55,7 +77,6 @@ public class ComponentItem : MonoBehaviour
         EventCenter.RemoveListener<GameManager.GameMode>(EventSendType.ChangeGameMode, ChangeGameMode);
         EventCenter.RemoveListener<GameObject, string, string>(EventSendType.InspectorChange, ChangeInspectorAction);
     }
-
     private void ChangeInspectorAction(GameObject arg1, string arg2, string arg3)
     {
         if (arg1 == gameObject)
@@ -72,19 +93,23 @@ public class ComponentItem : MonoBehaviour
                     transform.position = new Vector2(transform.position.x, float.Parse(arg3));
                     break;
                 case "Action":
-                    
+                    actionStr = arg3;
                     break;
                 case "ActionObject":
-
+                    actionObjId = arg3;
                     break;
             }
-            GameManager.Instance.SetInspectorData(arg2, arg3);
         }
     }
 
     public void Action()
     {
-        Debug.Log("Action");
+        Debug.Log(transform.name+"Action");
+    }
+
+    public void Action1()
+    {
+        Debug.Log(transform.name + "Action1");
     }
 
     private void ChangeGameMode(GameManager.GameMode gameMode)

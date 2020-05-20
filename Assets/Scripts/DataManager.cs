@@ -6,32 +6,31 @@ using System.IO;
 
 public class DataManager : SingleMono<DataManager>
 {
-    JsonData data;
-    public string GetDataFromFile(string _path,string _key,string _startValue="" )
+
+    public string GetDataFromFile(string _path,string _itemKey, string _key,string _startValue="" )
     {
-        data = new JsonData();
+        JsonData data = new JsonData();
         if (!File.Exists(_path))
         {
-            data[_key] = _startValue;
-            SaveDataToFile(_key,_startValue, _path);
+            SaveDataToFile(_itemKey, _key,_startValue, _path);
             return _startValue;
         }
         data = JsonMapper.ToObject(File.ReadAllText(_path));
         try
         {
-            return data[_key].ToJson();
+            return data[_itemKey][_key].ToJson();
         }
         catch
         {
-            data[_key] = _startValue;
-            SaveDataToFile(_key, _startValue, _path);
+            SaveDataToFile(_itemKey,_key, _startValue, _path);
             return _startValue;
         }
 
     }
 
-    public void SaveDataToFile(string _key,string _value,string _path)
+    public void SaveDataToFile(string _itemKey, string _key,string _value,string _path)
     {
+        JsonData data = new JsonData();
         string dirStr = _path.Replace(_path.Split('/')[_path.Split('/').Length - 1], "");
         if (!Directory.Exists(dirStr)) 
         {
@@ -40,13 +39,45 @@ public class DataManager : SingleMono<DataManager>
         if (File.Exists(_path))
         {
             data = JsonMapper.ToObject(File.ReadAllText(_path));
-            data[_key] = _value;
+            try
+            {
+                data[_itemKey][_key] = _value;
+            }
+            catch
+            {
+                JsonData tempItemData = new JsonData();
+                tempItemData[_key] = _value;
+                data[_itemKey] = tempItemData;
+            }
         }
         else
         {
-            data = new JsonData();
-            data[_key] = _value;
+            JsonData tempItemData = new JsonData();
+            tempItemData[_key] = _value;
+            data[_itemKey] = tempItemData;
         }
         File.WriteAllText(_path, data.ToJson());
     }
+
+    public JsonData GetDataFromFile(string _path)
+    {
+        JsonData data = new JsonData();
+        if (!File.Exists(_path))
+        {
+            SaveDataToFile(data, _path);
+        }
+        data = JsonMapper.ToObject(File.ReadAllText(_path));
+        return data;
+    }
+    public void SaveDataToFile(JsonData data, string _path)
+    {
+        string dirStr = _path.Replace(_path.Split('/')[_path.Split('/').Length - 1], "");
+        if (!Directory.Exists(dirStr))
+        {
+            Directory.CreateDirectory(dirStr);
+        }
+        File.WriteAllText(_path, data.ToJson());
+    }
+
+
 }
