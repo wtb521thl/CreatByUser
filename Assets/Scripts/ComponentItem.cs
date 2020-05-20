@@ -77,6 +77,12 @@ public class ComponentItem : MonoBehaviour,AllComponentMethods
         EventCenter.RemoveListener<GameManager.GameMode>(EventSendType.ChangeGameMode, ChangeGameMode);
         EventCenter.RemoveListener<GameObject, string, string>(EventSendType.InspectorChange, ChangeInspectorAction);
     }
+    /// <summary>
+    /// UI改变后修改物体的数值
+    /// </summary>
+    /// <param name="arg1"></param>
+    /// <param name="arg2"></param>
+    /// <param name="arg3"></param>
     private void ChangeInspectorAction(GameObject arg1, string arg2, string arg3)
     {
         if (arg1 == gameObject)
@@ -84,13 +90,19 @@ public class ComponentItem : MonoBehaviour,AllComponentMethods
             switch (arg2)
             {
                 case "Name":
-                    transform.name = arg3;
+                    selfRect.name = arg3;
                     break;
                 case "PosVectorX":
-                    transform.position = new Vector2(float.Parse(arg3), transform.position.y);
+                    selfRect.position = new Vector2(float.Parse(arg3), selfRect.position.y);
                     break;
                 case "PosVectorY":
-                    transform.position = new Vector2(transform.position.x, float.Parse(arg3));
+                    selfRect.position = new Vector2(selfRect.position.x, float.Parse(arg3));
+                    break;
+                case "SizeVectorX":
+                    selfRect.sizeDelta = new Vector2(float.Parse(arg3), selfRect.sizeDelta.y);
+                    break;
+                case "SizeVectorY":
+                    selfRect.sizeDelta = new Vector2(selfRect.sizeDelta.x, float.Parse(arg3));
                     break;
                 case "Action":
                     actionStr = arg3;

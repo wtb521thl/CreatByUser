@@ -103,6 +103,7 @@ public class UiManager : SingleMono<UiManager>
                 componentItem.actionObjId = data[i]["ActionObj"].ToJson().Trim('"');
                 componentItem.actionStr = data[i]["Action"].ToJson().Trim('"');
                 tempInstanceObj.GetComponent<RectTransform>().position = new Vector2(float.Parse(data[i]["PosX"].ToJson().Trim('"')), float.Parse(data[i]["PosY"].ToJson().Trim('"')));
+                tempInstanceObj.GetComponent<RectTransform>().sizeDelta = new Vector2(float.Parse(data[i]["SizeX"].ToJson().Trim('"')), float.Parse(data[i]["SizeY"].ToJson().Trim('"')));
                 tempInstanceObj.name = data[i]["Name"].ToJson().Trim('"');
             }
         }
@@ -118,6 +119,8 @@ public class UiManager : SingleMono<UiManager>
             data["Name"] = componentItems[i].name;
             data["PosX"] = componentItems[i].transform.position.x;
             data["PosY"] = componentItems[i].transform.position.y;
+            data["SizeX"] = componentItems[i].GetComponent<RectTransform>().sizeDelta.x;
+            data["SizeY"] = componentItems[i].GetComponent<RectTransform>().sizeDelta.y;
             data["TimeId"] = componentItems[i].timeID;
             data["Type"] = componentItems[i].componentType.ToString();
             data["ActionObj"] = componentItems[i].actionObjId;
