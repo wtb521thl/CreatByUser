@@ -33,6 +33,18 @@ public class ComponentItem : MonoBehaviour,AllComponentMethods
     /// 事件名称
     /// </summary>
     public string actionStr;
+    /// <summary>
+    /// 用户输入的值
+    /// </summary>
+    public string userInputValue;
+    /// <summary>
+    /// 用户输入的值字体大小
+    /// </summary>
+    public int fontSize;
+    /// <summary>
+    /// 图片地址
+    /// </summary>
+    public string imageUrl;
 
     private void Awake()
     {
@@ -110,6 +122,15 @@ public class ComponentItem : MonoBehaviour,AllComponentMethods
                 case "ActionObject":
                     actionObjId = arg3;
                     break;
+                case "UserInput":
+                    userInputValue = arg3;
+                    GameManager.Instance.selectGameobject.GetComponentInChildren<Text>().text = userInputValue;
+                    break;
+                case "FontSize":
+                    fontSize =int.Parse( arg3);
+                    GameManager.Instance.selectGameobject.GetComponentInChildren<Text>().fontSize = fontSize;
+                    break;
+                    
             }
         }
     }
@@ -124,6 +145,7 @@ public class ComponentItem : MonoBehaviour,AllComponentMethods
         Debug.Log(transform.name + "Action1");
     }
 
+    #region 物体外部轮廓拖动UI
     private void ChangeGameMode(GameManager.GameMode gameMode)
     {
         if (gameMode == GameManager.GameMode.Editor)
@@ -172,7 +194,7 @@ public class ComponentItem : MonoBehaviour,AllComponentMethods
         Refresh();
         for (int i = 0; i < outLines.Count; i++)
         {
-            outLines[i].RefreshRect(points, 5);
+            outLines[i].RefreshRect(points, 5,Color.green);
         }
     }
     /// <summary>
@@ -209,4 +231,5 @@ public class ComponentItem : MonoBehaviour,AllComponentMethods
         Debug.DrawLine(p3, p4, Color.blue);
         Debug.DrawLine(p4, p1, Color.blue);
     }
+    #endregion
 }

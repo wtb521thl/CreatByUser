@@ -1,26 +1,30 @@
 ﻿using UnityEngine;
-public class RectReciver: IReciver
+public class RectReciver : IReciver
 {
     public RectTransform selfRect;
 
-    Vector2 startPos;
-    Vector2 startSizeDelte;
+    public System.Action<Vector2,Vector2> DoAction;
+    public System.Action<Vector2, Vector2> UnDoAction;
+
+    public Vector2 startPos;
+    public Vector2 startSizeDelte;
 
     public Vector2 endPos;
     public Vector2 endSizeDelte;
 
 
-    public void Action() {
-        startPos = selfRect.position;
-        startSizeDelte = selfRect.sizeDelta;
-
+    public void Action()
+    {
         selfRect.position = endPos;
         selfRect.sizeDelta = endSizeDelte;
+        DoAction?.Invoke(endPos, endSizeDelte);
     }
 
-    public void UndoAction() {
+    public void UndoAction()
+    {
         selfRect.position = startPos;
         selfRect.sizeDelta = startSizeDelte;
+        UnDoAction?.Invoke(startPos, startSizeDelte);
     }
 }
 

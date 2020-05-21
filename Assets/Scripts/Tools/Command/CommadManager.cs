@@ -112,7 +112,15 @@ public class CommadManager : SingleMono<CommadManager>
         }
         nextCommands.Push(tempCommand);//撤销完成的命令放回执行命令栈中，以便点击下一步的时候继续操作
     }
-
+    /// <summary>
+    /// 清除所有的命令
+    /// </summary>
+    public void ClearAllCommand()
+    {
+        commands.Clear();
+        unDoCommands.Clear();
+        nextCommands.Clear();
+    }
 
     private void Update()
     {
@@ -121,14 +129,14 @@ public class CommadManager : SingleMono<CommadManager>
         //    AddCommand(new RectTransformCommand());
         //}
 
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            ExcuteCommand();
-        }
+        //if (Input.GetKeyDown(KeyCode.E))
+        //{
+        //    ExcuteCommand();
+        //}
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            UnDoCommand();
-        }
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    UnDoCommand();
+        //}
     }
 }

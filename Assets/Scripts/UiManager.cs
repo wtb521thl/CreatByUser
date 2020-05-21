@@ -22,6 +22,19 @@ public class UiManager : SingleMono<UiManager>
     /// 读取信息按钮
     /// </summary>
     public Button loadLayoutBtn;
+    /// <summary>
+    /// 删除选中的物体
+    /// </summary>
+    public Button destroySelectObjBtn;
+
+    /// <summary>
+    /// 撤销按钮
+    /// </summary>
+    public Button unDoActionBtn;
+    /// <summary>
+    /// 前进按钮
+    /// </summary>
+    public Button doActionBtn;
 
 
     Text changeModeBtnText;
@@ -41,12 +54,37 @@ public class UiManager : SingleMono<UiManager>
     private void Start()
     {
         changeModeBtn.onClick.AddListener(ChangeMode);
+        changeModeBtnText = changeModeBtn.GetComponentInChildren<Text>();
         saveLayoutBtn.onClick.AddListener(SaveLayout);
         loadLayoutBtn.onClick.AddListener(LoadLayout);
-        changeModeBtnText = changeModeBtn.GetComponentInChildren<Text>();
+        destroySelectObjBtn.onClick.AddListener(DestroySelectObj);
+        unDoActionBtn.onClick.AddListener(() => { CommadManager.Instance.UnDoCommand(); });
+        doActionBtn.onClick.AddListener(() => { CommadManager.Instance.ExcuteCommand(); });
+
+
         EventCenter.AddListener<GameManager.GameMode>(EventSendType.ChangeGameMode, ChangeGameMode);
-        RefreshBtnText();
+        SwitchInspectorPanel(GameManager.Instance.GetGameMode());
+        ChangeActiveByModel(GameManager.Instance.GetGameMode());
         GetActions();
+    }
+
+
+    void ChangeActiveByModel(GameManager.GameMode gameMode)
+    {
+        saveLayoutBtn.gameObject.SetActive(GameManager.GameMode.Editor == gameMode);
+        loadLayoutBtn.gameObject.SetActive(GameManager.GameMode.Editor == gameMode);
+        destroySelectObjBtn.gameObject.SetActive(GameManager.GameMode.Editor == gameMode);
+        unDoActionBtn.gameObject.SetActive(GameManager.GameMode.Editor == gameMode); 
+        doActionBtn.gameObject.SetActive(GameManager.GameMode.Editor == gameMode);
+        changeModeBtnText.text = gameMode.ToString();
+    }
+
+    private void DestroySelectObj()
+    {
+        if (GameManager.Instance.selectGameobject != null)
+        {
+            DestroyImmediate(GameManager.Instance.selectGameobject);
+        }
     }
 
     void GetActions()
@@ -88,25 +126,50 @@ public class UiManager : SingleMono<UiManager>
         {
             return;
         }
-        for (int i = 0; i < objContainer.childCount; i++)
+        for (int i = objContainer.childCount - 1; i >= 0; i--)
         {
             DestroyImmediate(objContainer.GetChild(i).gameObject);
         }
         for (int i = 0; i < data.Count; i++)
         {
-            GameObject tempInstanceObjResource = ResourceManager.Instance.GetGameobject(PathStatic.PrefabsComponentsPath + data[i]["Type"].ToJson().Trim('"'));
+            GameObject tempInstanceObjResource = ResourceManager.Instance.GetGameobject(PathStatic.PrefabsComponentsPath +GameManager.ChangeJsonDataToChinese( data[i]["Type"].ToJson()));
             if (tempInstanceObjResource != null)
             {
                 GameObject tempInstanceObj = Instantiate(tempInstanceObjResource, objContainer);
                 ComponentItem componentItem = tempInstanceObj.GetOrAddComponent<ComponentItem>();
-                componentItem.timeID = data[i]["TimeId"].ToJson().Trim('"');
-                componentItem.actionObjId = data[i]["ActionObj"].ToJson().Trim('"');
-                componentItem.actionStr = data[i]["Action"].ToJson().Trim('"');
+                componentItem.timeID = GameManager.ChangeJsonDataToChinese(data[i]["TimeId"].ToJson());
                 tempInstanceObj.GetComponent<RectTransform>().position = new Vector2(float.Parse(data[i]["PosX"].ToJson().Trim('"')), float.Parse(data[i]["PosY"].ToJson().Trim('"')));
                 tempInstanceObj.GetComponent<RectTransform>().sizeDelta = new Vector2(float.Parse(data[i]["SizeX"].ToJson().Trim('"')), float.Parse(data[i]["SizeY"].ToJson().Trim('"')));
-                tempInstanceObj.name = data[i]["Name"].ToJson().Trim('"');
+                tempInstanceObj.name = GameManager.ChangeJsonDataToChinese(data[i]["Name"].ToJson());
+
+                switch (GameManager.ChangeJsonDataToChinese(data[i]["Type"].ToJson()))
+                {
+                    case "Button":
+                        componentItem.actionObjId = GameManager.ChangeJsonDataToChinese(data[i]["ActionObj"].ToJson());
+                        componentItem.actionStr = GameManager.ChangeJsonDataToChinese(data[i]["Action"].ToJson());
+                        componentItem.userInputValue = GameManager.ChangeJsonDataToChinese(data[i]["UserInput"].ToJson());
+                        componentItem.fontSize =int.Parse( data[i]["FontSize"].ToJson().Trim('"'));
+                        tempInstanceObj.GetComponentInChildren<Text>().text = componentItem.userInputValue;
+                        tempInstanceObj.GetComponentInChildren<Text>().fontSize= componentItem.fontSize;
+                        break;
+                    case "Text":
+                        componentItem.userInputValue = GameManager.ChangeJsonDataToChinese(data[i]["UserInput"].ToJson());
+                        componentItem.fontSize = int.Parse(data[i]["FontSize"].ToJson().Trim('"'));
+                        tempInstanceObj.GetComponentInChildren<Text>().text = componentItem.userInputValue;
+                        tempInstanceObj.GetComponentInChildren<Text>().fontSize = componentItem.fontSize;
+                        break;
+                    case "Image":
+
+                        break;
+                    default:
+
+                        break;
+                }
+
+
             }
         }
+        CommadManager.Instance.ClearAllCommand();
     }
 
     private void SaveLayout()
@@ -125,6 +188,8 @@ public class UiManager : SingleMono<UiManager>
             data["Type"] = componentItems[i].componentType.ToString();
             data["ActionObj"] = componentItems[i].actionObjId;
             data["Action"] = componentItems[i].actionStr;
+            data["UserInput"] = componentItems[i].userInputValue;
+            data["FontSize"] = componentItems[i].fontSize;
             keyData.Add(data);
         }
         DataManager.Instance.SaveDataToFile(keyData, PathStatic.LayoutJsonPath);
@@ -139,7 +204,7 @@ public class UiManager : SingleMono<UiManager>
             {
                 ShowInspectorPanel();
             }
-            else if (!IsOverSelectGameobj(inspectorPanel.gameObject))
+            else if (!EventSystem.current.IsPointerOverGameObject())
             {
                 CloseInspectorPanel();
             }
@@ -171,8 +236,8 @@ public class UiManager : SingleMono<UiManager>
     }
     private void ChangeGameMode(GameManager.GameMode arg1)
     {
-        RefreshBtnText();
-
+        SwitchInspectorPanel(arg1);
+        ChangeActiveByModel(arg1);
     }
 
     private void ChangeMode()
@@ -187,12 +252,12 @@ public class UiManager : SingleMono<UiManager>
         }
     }
 
-    void RefreshBtnText()
+    void SwitchInspectorPanel(GameManager.GameMode gameMode)
     {
-        changeModeBtnText.text = GameManager.Instance.GetGameMode().ToString();
-        if (GameManager.Instance.GetGameMode() == GameManager.GameMode.Editor)
+        if (gameMode == GameManager.GameMode.Editor)
         {
-            ShowInspectorPanel();
+            if (GameManager.Instance.selectGameobject != null)
+                ShowInspectorPanel();
         }
         else
         {

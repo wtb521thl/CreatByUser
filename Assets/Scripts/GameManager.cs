@@ -32,4 +32,10 @@ public class GameManager : SingleMono<GameManager>
        return gameMode;
     }
 
+
+    public static string ChangeJsonDataToChinese(string content)
+    {
+        return System.Text.RegularExpressions.Regex.Unescape(content).Trim('"');
+    }
+
 }

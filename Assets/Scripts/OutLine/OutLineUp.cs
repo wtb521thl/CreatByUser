@@ -14,10 +14,11 @@ public class OutLineUp: OutLine
         selfRect.anchorMin = new Vector2(0.5f, 0);
 
     }
-    public override void RefreshRect(Vector2[] points, float lineWidth)
+    public override void RefreshRect(Vector2[] points, float lineWidth, Color lineColor)
     {
         lineObjRect.sizeDelta = new Vector2(Mathf.Abs(points[1].x - points[0].x), lineWidth);
         lineObjRect.anchoredPosition = new Vector2(0, selfRect.sizeDelta.y / 2f + lineWidth / 2f);
+        lineObjRect.GetComponent<Image>().color = lineColor;
     }
     protected override void GetStartDragObjPos()
     {
@@ -38,10 +39,11 @@ public class OutLineRight : OutLine
         selfRect.anchorMax = new Vector2(0f, 0.5f);
         selfRect.anchorMin = new Vector2(0f, 0.5f);
     }
-    public override void RefreshRect(Vector2[] points, float lineWidth)
+    public override void RefreshRect(Vector2[] points, float lineWidth, Color lineColor)
     {
         lineObjRect.sizeDelta = new Vector2(lineWidth, Mathf.Abs(points[1].y - points[2].y));
         lineObjRect.anchoredPosition = new Vector2(selfRect.sizeDelta.x / 2f + lineWidth / 2f, 0);
+        lineObjRect.GetComponent<Image>().color = lineColor;
     }
     protected override void GetStartDragObjPos()
     {
@@ -62,10 +64,11 @@ public class OutLineDown : OutLine
         selfRect.anchorMax = new Vector2(0.5f, 1);
         selfRect.anchorMin = new Vector2(0.5f, 1);
     }
-    public override void RefreshRect(Vector2[] points, float lineWidth)
+    public override void RefreshRect(Vector2[] points, float lineWidth, Color lineColor)
     {
         lineObjRect.sizeDelta = new Vector2(Mathf.Abs(points[3].x - points[2].x), lineWidth);
         lineObjRect.anchoredPosition = new Vector2(0, -selfRect.sizeDelta.y / 2f - lineWidth / 2f);
+        lineObjRect.GetComponent<Image>().color = lineColor;
     }
 
     protected override void GetStartDragObjPos()
@@ -90,10 +93,11 @@ public class OutLineLeft : OutLine
         selfRect.anchorMin = new Vector2(1, 0.5f);
     }
 
-    public override void RefreshRect(Vector2[] points, float lineWidth)
+    public override void RefreshRect(Vector2[] points, float lineWidth, Color lineColor)
     {
         lineObjRect.sizeDelta = new Vector2(lineWidth, Mathf.Abs(points[1].y - points[3].y));
         lineObjRect.anchoredPosition = new Vector2(-(selfRect.sizeDelta.x / 2f + lineWidth / 2f), 0);
+        lineObjRect.GetComponent<Image>().color = lineColor;
     }
 
     protected override void GetStartDragObjPos()
@@ -118,10 +122,11 @@ public class OutPointLeftUp : OutLine
         selfRect.anchorMin = new Vector2(1, 0);
     }
 
-    public override void RefreshRect(Vector2[] points, float lineWidth)
+    public override void RefreshRect(Vector2[] points, float lineWidth, Color lineColor)
     {
         lineObjRect.sizeDelta = new Vector2(lineWidth*2, lineWidth*2);
         lineObjRect.position = points[0];
+        lineObjRect.GetComponent<Image>().color = lineColor;
     }
 
     protected override void GetStartDragObjPos()
@@ -150,11 +155,13 @@ public class OutPointRightUp : OutLine
         selfRect.anchorMin = new Vector2(0, 0);
     }
 
-    public override void RefreshRect(Vector2[] points, float lineWidth)
+    public override void RefreshRect(Vector2[] points, float lineWidth, Color lineColor)
     {
         lineObjRect.sizeDelta = new Vector2(lineWidth * 2, lineWidth * 2);
         lineObjRect.position = points[1];
+        lineObjRect.GetComponent<Image>().color = lineColor;
     }
+
 
     protected override void GetStartDragObjPos()
     {
@@ -183,10 +190,11 @@ public class OutPointRightDown : OutLine
         selfRect.anchorMin = new Vector2(0, 1);
     }
 
-    public override void RefreshRect(Vector2[] points, float lineWidth)
+    public override void RefreshRect(Vector2[] points, float lineWidth,Color lineColor)
     {
         lineObjRect.sizeDelta = new Vector2(lineWidth * 2, lineWidth * 2);
         lineObjRect.position = points[2];
+        lineObjRect.GetComponent<Image>().color=lineColor;
     }
 
     protected override void GetStartDragObjPos()
@@ -215,10 +223,11 @@ public class OutPointLeftDown : OutLine
         selfRect.anchorMin = new Vector2(1, 1);
     }
 
-    public override void RefreshRect(Vector2[] points, float lineWidth)
+    public override void RefreshRect(Vector2[] points, float lineWidth, Color lineColor)
     {
         lineObjRect.sizeDelta = new Vector2(lineWidth * 2, lineWidth * 2);
         lineObjRect.position = points[3];
+        lineObjRect.GetComponent<Image>().color = lineColor;
     }
 
     protected override void GetStartDragObjPos()
@@ -252,11 +261,11 @@ public class OutMoveMiddle : OutLine
         selfRect.anchorMin = new Vector2(0.5f, 0.5f);
     }
 
-    public override void RefreshRect(Vector2[] points, float lineWidth)
+    public override void RefreshRect(Vector2[] points, float lineWidth, Color lineColor)
     {
         lineObjRect.sizeDelta = new Vector2(Mathf.Abs(points[1].x - points[0].x), Mathf.Abs(points[1].y - points[2].y));
         lineObjRect.position = (points[0] + points[2])/2f;
-        Image tempImage = lineObjRect.GetComponent<Image>();
+        Image tempImage = lineObjRect.GetComponent<Image>();//中间部分没有颜色不适用LineColor
         tempImage.color = new Color(tempImage.color.r, tempImage.color.g, tempImage.color.b, 0);
     }
     Vector2 startDragPos;

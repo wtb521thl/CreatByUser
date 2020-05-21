@@ -88,3 +88,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   componentType: 2
+  timeID: 
+  actionObjId: 
+  actionStr: 
+  userInputValue: 
+  imageUrl: 

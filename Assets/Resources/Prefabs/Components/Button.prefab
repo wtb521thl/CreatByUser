@@ -78,7 +78,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Button
+  m_Text: 
 --- !u!1 &4418319228617579972
 GameObject:
   m_ObjectHideFlags: 0
@@ -213,3 +213,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3ced9efc20c89c41827c29af7bec1f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  componentType: 0
+  timeID: 
+  actionObjId: 
+  actionStr: 
+  userInputValue: 
+  imageUrl: 

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class OutLine: IOutLine
+public class OutLine : IOutLine
 {
     /// <summary>
     /// 自身的框transform
@@ -84,7 +84,7 @@ public class OutLine: IOutLine
     /// </summary>
     /// <param name="points">物体的四个边界顶点</param>
     /// <param name="lineWidth">线条的宽度</param>
-    public virtual void RefreshRect(Vector2[] points,float lineWidth)
+    public virtual void RefreshRect(Vector2[] points, float lineWidth, Color lineColor)
     {
 
     }
@@ -108,6 +108,9 @@ public class OutLine: IOutLine
             Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         }
     }
+
+    Vector2 startPos;
+    Vector2 startSize;
     /// <summary>
     /// 开始拖拽事件
     /// </summary>
@@ -125,7 +128,8 @@ public class OutLine: IOutLine
         SetAnchoredPos(); //更改锚点设置
         selfRect.ForceUpdateRectTransforms();//强制刷新下
         selfRect.position = worldPos;
-        SendCommand(selfRect.position,selfRect.sizeDelta);
+        startPos = selfRect.position;
+        startSize = selfRect.sizeDelta;
         GetStartDragObjPos();
     }
     /// <summary>
@@ -156,24 +160,41 @@ public class OutLine: IOutLine
     {
         isDrag = false;
 
+        SendCommand(selfRect.position, selfRect.sizeDelta, (pos, size) =>
+        {
+            EventCenter.BroadcastEvent<GameObject, string, string>(EventSendType.InspectorChange, GameManager.Instance.selectGameobject, "PosVectorX", pos.x.ToString());
+            EventCenter.BroadcastEvent<GameObject, string, string>(EventSendType.InspectorChange, GameManager.Instance.selectGameobject, "PosVectorY", pos.y.ToString());
+            EventCenter.BroadcastEvent<GameObject, string, string>(EventSendType.InspectorChange, GameManager.Instance.selectGameobject, "SizeVectorX", size.x.ToString());
+            EventCenter.BroadcastEvent<GameObject, string, string>(EventSendType.InspectorChange, GameManager.Instance.selectGameobject, "SizeVectorY", size.y.ToString());
 
+        });
+        ExcuteAllCommand();
     }
 
 
-    private void SendCommand(Vector2 endPos,Vector2 sizeDelte)
+    private void SendCommand(Vector2 endPos, Vector2 sizeDelte, Action<Vector2, Vector2> RefreshAction)
     {
         RectReciver reciver = new RectReciver();
+        reciver.DoAction += RefreshAction;
+        reciver.UnDoAction += RefreshAction;
         reciver.selfRect = selfRect;
+        reciver.startPos = startPos;
+        reciver.startSizeDelte = startSize;
         reciver.endPos = endPos;
         reciver.endSizeDelte = sizeDelte;
         Command c = new Command(reciver);
         CommadManager.Instance.AddCommand(c);
-        CommadManager.Instance.ExcuteCommand();
+
+    }
+    void ExcuteAllCommand()
+    {
+        Debug.Log("执行命令");
+        CommadManager.Instance.ExcuteAllCommand();
     }
 }
 
 public interface IOutLine
 {
     void Init(GameObject go);
-    void RefreshRect(Vector2[] points, float lineWidth);
+    void RefreshRect(Vector2[] points, float lineWidth, Color lineColor);
 }
