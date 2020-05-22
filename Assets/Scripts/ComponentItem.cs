@@ -130,7 +130,9 @@ public class ComponentItem : MonoBehaviour,AllComponentMethods
                     fontSize =int.Parse( arg3);
                     GameManager.Instance.selectGameobject.GetComponentInChildren<Text>().fontSize = fontSize;
                     break;
-                    
+                case "ImagePath":
+                    imageUrl= arg3;
+                    break;
             }
         }
     }

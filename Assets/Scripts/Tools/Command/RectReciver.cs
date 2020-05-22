@@ -3,7 +3,7 @@ public class RectReciver : IReciver
 {
     public RectTransform selfRect;
 
-    public System.Action<Vector2,Vector2> DoAction;
+    public System.Action<Vector2, Vector2> DoAction;
     public System.Action<Vector2, Vector2> UnDoAction;
 
     public Vector2 startPos;
@@ -78,5 +78,56 @@ public class DropdownReciver : IReciver
     {
         dropdown.SetValueWithoutNotify(startValue);
         UnDoAction?.Invoke(startValue);
+    }
+}
+
+public class ImagePathReciver : IReciver
+{
+    public ComponentItem item;
+
+    public System.Action<string> DoAction;
+    public System.Action<string> UnDoAction;
+
+
+    public string value;
+
+    public string startValue;
+
+    public void Action()
+    {
+        item.imageUrl = value;
+        DoAction?.Invoke(value);
+    }
+
+    public void UndoAction()
+    {
+        item.imageUrl = startValue;
+        UnDoAction?.Invoke(startValue);
+    }
+}
+
+
+public class DestroyObjReciver : IReciver
+{
+    public GameObject obj;
+
+    public System.Action DoAction;
+    public System.Action UnDoAction;
+
+
+    GameObject copyGameObj;
+
+
+    public void Action()
+    {
+        copyGameObj = GameObject.Instantiate(obj, obj.transform.parent);
+        copyGameObj.SetActive(false);
+        GameObject.DestroyImmediate(obj);
+    }
+
+    public void UndoAction()
+    {
+        copyGameObj.SetActive(true);
+        obj = copyGameObj;
     }
 }

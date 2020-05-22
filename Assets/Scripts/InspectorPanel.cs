@@ -13,6 +13,7 @@ public class InspectorPanel : MonoBehaviour
     public GameObject oneValue;
     public GameObject twoValue;
     public GameObject selectValue;
+    public GameObject imageValue;
 
     InspectorItem inspectorItem;
 
@@ -27,9 +28,10 @@ public class InspectorPanel : MonoBehaviour
     /// </summary>
     void Init()
     {
-        oneValue = ResourceManager.Instance.GetGameobject(PathStatic.InspectorItemTypePath+ "OneValue");
+        oneValue = ResourceManager.Instance.GetGameobject(PathStatic.InspectorItemTypePath + "OneValue");
         twoValue = ResourceManager.Instance.GetGameobject(PathStatic.InspectorItemTypePath + "TwoValue");
         selectValue = ResourceManager.Instance.GetGameobject(PathStatic.InspectorItemTypePath + "SelectValue");
+        imageValue = ResourceManager.Instance.GetGameobject(PathStatic.InspectorItemTypePath + "ImageValue");
     }
 
     private void InspectorChange(GameObject arg1, string arg2, string arg3)
@@ -44,7 +46,7 @@ public class InspectorPanel : MonoBehaviour
     /// <summary>
     /// 根据选中物体生成对应的结构
     /// </summary>
-    void InitItem()
+    public void InitItem()
     {
         if (GameManager.Instance.selectGameobject != null)
         {
@@ -80,7 +82,7 @@ public class InspectorPanel : MonoBehaviour
     }
 
 
-    void Refresh()
+    public void Refresh()
     {
         if (GameManager.Instance.selectGameobject != null)
         {

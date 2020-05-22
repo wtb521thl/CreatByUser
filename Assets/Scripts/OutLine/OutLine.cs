@@ -188,7 +188,6 @@ public class OutLine : IOutLine
     }
     void ExcuteAllCommand()
     {
-        Debug.Log("执行命令");
         CommadManager.Instance.ExcuteAllCommand();
     }
 }

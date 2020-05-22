@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Reflection;
+using UnityEngine.Networking;
 
 public class UiManager : SingleMono<UiManager>
 {
@@ -74,7 +75,7 @@ public class UiManager : SingleMono<UiManager>
         saveLayoutBtn.gameObject.SetActive(GameManager.GameMode.Editor == gameMode);
         loadLayoutBtn.gameObject.SetActive(GameManager.GameMode.Editor == gameMode);
         destroySelectObjBtn.gameObject.SetActive(GameManager.GameMode.Editor == gameMode);
-        unDoActionBtn.gameObject.SetActive(GameManager.GameMode.Editor == gameMode); 
+        unDoActionBtn.gameObject.SetActive(GameManager.GameMode.Editor == gameMode);
         doActionBtn.gameObject.SetActive(GameManager.GameMode.Editor == gameMode);
         changeModeBtnText.text = gameMode.ToString();
     }
@@ -83,8 +84,16 @@ public class UiManager : SingleMono<UiManager>
     {
         if (GameManager.Instance.selectGameobject != null)
         {
-            DestroyImmediate(GameManager.Instance.selectGameobject);
+            SendDesCommand();
         }
+    }
+    void SendDesCommand()
+    {
+        DestroyObjReciver destroyObjReciver = new DestroyObjReciver();
+        destroyObjReciver.obj = GameManager.Instance.selectGameobject;
+        Command c = new Command(destroyObjReciver);
+        CommadManager.Instance.AddCommand(c);
+        CommadManager.Instance.ExcuteCommand();
     }
 
     void GetActions()
@@ -103,6 +112,24 @@ public class UiManager : SingleMono<UiManager>
         }
 
 
+    }
+
+    /// <summary>
+    /// 通过地址获取sprite
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="FinishAction"></param>
+    public void GetImageByPath(string path, Action<Texture> FinishAction)
+    {
+        StartCoroutine(WaitToGetImage(path, FinishAction));
+    }
+    IEnumerator WaitToGetImage(string path, Action<Texture> FinishAction)
+    {
+        UnityWebRequest unityWebRequest = UnityWebRequest.Get(path);
+        DownloadHandlerTexture downloadHandlerTexture = new DownloadHandlerTexture(true);
+        unityWebRequest.downloadHandler = downloadHandlerTexture;
+        yield return unityWebRequest.SendWebRequest();
+        FinishAction(downloadHandlerTexture.texture);
     }
 
     public GameObject GetGameObjectById(string Id)
@@ -132,7 +159,7 @@ public class UiManager : SingleMono<UiManager>
         }
         for (int i = 0; i < data.Count; i++)
         {
-            GameObject tempInstanceObjResource = ResourceManager.Instance.GetGameobject(PathStatic.PrefabsComponentsPath +GameManager.ChangeJsonDataToChinese( data[i]["Type"].ToJson()));
+            GameObject tempInstanceObjResource = ResourceManager.Instance.GetGameobject(PathStatic.PrefabsComponentsPath + GameManager.ChangeJsonDataToChinese(data[i]["Type"].ToJson()));
             if (tempInstanceObjResource != null)
             {
                 GameObject tempInstanceObj = Instantiate(tempInstanceObjResource, objContainer);
@@ -148,9 +175,9 @@ public class UiManager : SingleMono<UiManager>
                         componentItem.actionObjId = GameManager.ChangeJsonDataToChinese(data[i]["ActionObj"].ToJson());
                         componentItem.actionStr = GameManager.ChangeJsonDataToChinese(data[i]["Action"].ToJson());
                         componentItem.userInputValue = GameManager.ChangeJsonDataToChinese(data[i]["UserInput"].ToJson());
-                        componentItem.fontSize =int.Parse( data[i]["FontSize"].ToJson().Trim('"'));
+                        componentItem.fontSize = int.Parse(data[i]["FontSize"].ToJson().Trim('"'));
                         tempInstanceObj.GetComponentInChildren<Text>().text = componentItem.userInputValue;
-                        tempInstanceObj.GetComponentInChildren<Text>().fontSize= componentItem.fontSize;
+                        tempInstanceObj.GetComponentInChildren<Text>().fontSize = componentItem.fontSize;
                         break;
                     case "Text":
                         componentItem.userInputValue = GameManager.ChangeJsonDataToChinese(data[i]["UserInput"].ToJson());
@@ -159,7 +186,7 @@ public class UiManager : SingleMono<UiManager>
                         tempInstanceObj.GetComponentInChildren<Text>().fontSize = componentItem.fontSize;
                         break;
                     case "Image":
-
+                        componentItem.imageUrl = data[i]["ImagePath"].ToJson().Trim('"');
                         break;
                     default:
 
@@ -190,6 +217,7 @@ public class UiManager : SingleMono<UiManager>
             data["Action"] = componentItems[i].actionStr;
             data["UserInput"] = componentItems[i].userInputValue;
             data["FontSize"] = componentItems[i].fontSize;
+            data["ImagePath"] = componentItems[i].imageUrl;
             keyData.Add(data);
         }
         DataManager.Instance.SaveDataToFile(keyData, PathStatic.LayoutJsonPath);
@@ -206,6 +234,7 @@ public class UiManager : SingleMono<UiManager>
             }
             else if (!EventSystem.current.IsPointerOverGameObject())
             {
+
                 CloseInspectorPanel();
             }
         }
@@ -264,17 +293,27 @@ public class UiManager : SingleMono<UiManager>
             CloseInspectorPanel();
         }
     }
-
+    InspectorPanel inspectorPanelScript;
     /// <summary>
     /// 展示属性面板
     /// </summary>
     void ShowInspectorPanel()
     {
-        if (inspectorPanel != null)
+
+        if (GameManager.Instance.selectGameobject != GameManager.Instance.lastSelectGameObject)
         {
             CloseInspectorPanel();
         }
-        inspectorPanel = Instantiate(ResourceManager.GetGameObject(PathStatic.InspectorPanelPrefab), transform);
+        if (inspectorPanelScript == null)
+        {
+            inspectorPanel = Instantiate(ResourceManager.GetGameObject(PathStatic.InspectorPanelPrefab), transform);
+            inspectorPanelScript = inspectorPanel.GetComponent<InspectorPanel>();
+        }
+        else
+        {
+            inspectorPanelScript.Refresh();
+
+        }
 
     }
     /// <summary>
@@ -285,6 +324,7 @@ public class UiManager : SingleMono<UiManager>
         if (inspectorPanel != null)
         {
             DestroyImmediate(inspectorPanel);
+            inspectorPanelScript = null;
         }
     }
 }

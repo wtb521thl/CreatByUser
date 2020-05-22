@@ -7,12 +7,6 @@ namespace Inspector
 {
     public abstract class InspectorItem
     {
-        protected enum ItemType
-        {
-            OneProperty,
-            TwoProperty,
-            SelectProperty,
-        }
         protected ComponentItem componentItem;
         protected InspectorPanel inspectorPanel;
         protected GameObject selectObj;
@@ -205,7 +199,6 @@ namespace Inspector
                 ExcuteCommand();
             });
         }
-
         protected void InitDropDownCommand(Dropdown dropdown, Action<int> tempAction)
         {
             int lastDropDownValue = 0;
@@ -218,7 +211,13 @@ namespace Inspector
             });
         }
 
-       protected void ExcuteCommand()
+        protected void ComponentItemCommand(ComponentItem item,string value, Action<string> tempAction)
+        {
+            SendCommand(item, value, tempAction);
+            ExcuteCommand();
+        }
+
+        protected void ExcuteCommand()
         {
             CommadManager.Instance.ExcuteAllCommand();
         }
@@ -242,6 +241,19 @@ namespace Inspector
             reciver.UnDoAction = tempAction;
             reciver.dropdown = dropdown;
             reciver.startValue = lastDropDownValue;
+            reciver.value = value;
+            Command c = new Command(reciver);
+            CommadManager.Instance.AddCommand(c);
+        }
+
+
+        protected void SendCommand(ComponentItem item, string value, Action<string> tempAction)
+        {
+            ImagePathReciver reciver = new ImagePathReciver();
+            reciver.DoAction = tempAction;
+            reciver.UnDoAction = tempAction;
+            reciver.item = item;
+            reciver.startValue = item.imageUrl;
             reciver.value = value;
             Command c = new Command(reciver);
             CommadManager.Instance.AddCommand(c);
