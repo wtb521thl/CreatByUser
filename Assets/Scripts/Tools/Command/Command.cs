@@ -1,19 +1,28 @@
 ﻿
 public class Command : ICommand
 {
-    IReciver reciver;
+    IReciver[] recivers=new IReciver[1];
     public Command(IReciver _reciver)
     {
-        reciver = _reciver;
+        recivers[0] = _reciver;
     }
-
+    public Command(IReciver[] _reciver)
+    {
+        recivers = _reciver;
+    }
     public void ExcuteCommand()
     {
-        reciver.Action();
+        for (int i = 0; i < recivers.Length; i++)
+        {
+            recivers[i].Action();
+        }
     }
 
     public void UndoCommand()
     {
-        reciver.UndoAction();
+        for (int i = 0; i < recivers.Length; i++)
+        {
+            recivers[i].UndoAction();
+        }
     }
 }

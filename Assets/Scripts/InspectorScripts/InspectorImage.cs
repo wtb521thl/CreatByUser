@@ -96,6 +96,7 @@ namespace Inspector
         private void ImageFieldChangeValue(string arg0)
         {
             EventCenter.BroadcastEvent<GameObject, string, string>(EventSendType.InspectorChange, selectObj, "ImagePath", arg0);
+            EventCenter.BroadcastEvent(EventSendType.RefreshInspector);
         }
 
 

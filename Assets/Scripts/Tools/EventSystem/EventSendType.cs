@@ -9,6 +9,10 @@ public enum EventSendType
 {
     ChangeGameMode,
     
-    InspectorChange
+    InspectorChange,
+
+    RefreshInspector,
+
+    RefreshSelectObj
 
 }

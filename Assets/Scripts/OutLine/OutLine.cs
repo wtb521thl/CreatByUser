@@ -75,9 +75,41 @@ public class OutLine : IOutLine
 
     private void ClickAction()
     {
-        GameManager.Instance.lastSelectGameObject = GameManager.Instance.selectGameobject;
-        GameManager.Instance.selectGameobject = selfRect.gameObject;
+        //GameManager.Instance.lastSelectGameObject = GameManager.Instance.selectGameobject;
+        //GameManager.Instance.selectGameobject = selfRect.gameObject;
+
+        SetSelectGameObjectReciver reciver1 = new SetSelectGameObjectReciver();
+        reciver1.willBeObj = GameManager.Instance.selectGameobject;
+        reciver1.lastObj = GameManager.Instance.lastSelectGameObject;
+        reciver1.DoAction += DoAction1;
+        reciver1.UnDoAction += DoAction1;
+        SetSelectGameObjectReciver reciver2 = new SetSelectGameObjectReciver();
+        reciver2.willBeObj = selfRect.gameObject;
+        reciver2.lastObj = GameManager.Instance.selectGameobject;
+        reciver2.DoAction += DoAction2;
+        reciver2.UnDoAction += DoAction2;
+
+        AddAndExcludeCommand(new SetSelectGameObjectReciver[] { reciver1, reciver2 });
+
     }
+    void AddAndExcludeCommand(SetSelectGameObjectReciver[] setSelectGameObjectRecivers)
+    {
+        Command c = new Command(setSelectGameObjectRecivers);
+        CommadManager.Instance.AddCommand(c);
+        CommadManager.Instance.ExcuteCommand();
+    }
+
+    private void DoAction1(GameObject obj)
+    {
+        GameManager.Instance.lastSelectGameObject = obj;
+        EventCenter.BroadcastEvent(EventSendType.RefreshSelectObj);
+    }
+    private void DoAction2(GameObject obj)
+    {
+        GameManager.Instance.selectGameobject = obj;
+        EventCenter.BroadcastEvent(EventSendType.RefreshSelectObj);
+    }
+
 
     /// <summary>
     /// updata中刷新调用（后续可添加颜色、材质球等属性）
@@ -166,7 +198,7 @@ public class OutLine : IOutLine
             EventCenter.BroadcastEvent<GameObject, string, string>(EventSendType.InspectorChange, GameManager.Instance.selectGameobject, "PosVectorY", pos.y.ToString());
             EventCenter.BroadcastEvent<GameObject, string, string>(EventSendType.InspectorChange, GameManager.Instance.selectGameobject, "SizeVectorX", size.x.ToString());
             EventCenter.BroadcastEvent<GameObject, string, string>(EventSendType.InspectorChange, GameManager.Instance.selectGameobject, "SizeVectorY", size.y.ToString());
-
+            EventCenter.BroadcastEvent(EventSendType.RefreshInspector);
         });
         ExcuteAllCommand();
     }

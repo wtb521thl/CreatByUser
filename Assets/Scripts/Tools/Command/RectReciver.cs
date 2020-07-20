@@ -121,6 +121,7 @@ public class DestroyObjReciver : IReciver
     public void Action()
     {
         copyGameObj = GameObject.Instantiate(obj, obj.transform.parent);
+        copyGameObj.name = obj.name;
         copyGameObj.SetActive(false);
         GameObject.DestroyImmediate(obj);
     }
@@ -129,5 +130,52 @@ public class DestroyObjReciver : IReciver
     {
         copyGameObj.SetActive(true);
         obj = copyGameObj;
+    }
+}
+
+
+public class InstanceObjReciver : IReciver
+{
+    public GameObject obj;
+    public Transform parent;
+
+    public System.Action<GameObject> DoAction;
+    public System.Action UnDoAction;
+
+
+    GameObject instanceGameObj;
+
+
+    public void Action()
+    {
+        instanceGameObj = GameObject.Instantiate(obj, parent);
+        instanceGameObj.name = obj.name;
+        DoAction?.Invoke(instanceGameObj);
+    }
+
+    public void UndoAction()
+    {
+        GameObject.DestroyImmediate(instanceGameObj);
+    }
+}
+
+
+public class SetSelectGameObjectReciver : IReciver
+{
+
+    public GameObject willBeObj;
+
+    public GameObject lastObj;
+
+    public System.Action<GameObject> DoAction;
+    public System.Action<GameObject> UnDoAction;
+    public void Action()
+    {
+        DoAction?.Invoke(willBeObj);
+    }
+
+    public void UndoAction()
+    {
+        DoAction?.Invoke(lastObj);
     }
 }

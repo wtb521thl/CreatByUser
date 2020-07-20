@@ -21,7 +21,8 @@ public class InspectorPanel : MonoBehaviour
     {
         Init();
         InitItem();
-        EventCenter.AddListener<GameObject, string, string>(EventSendType.InspectorChange, InspectorChange);
+
+        EventCenter.AddListener(EventSendType.RefreshInspector, Refresh);
     }
     /// <summary>
     /// 初始化预设
@@ -34,14 +35,11 @@ public class InspectorPanel : MonoBehaviour
         imageValue = ResourceManager.Instance.GetGameobject(PathStatic.InspectorItemTypePath + "ImageValue");
     }
 
-    private void InspectorChange(GameObject arg1, string arg2, string arg3)
-    {
-        Refresh();
-    }
 
     private void OnDestroy()
     {
-        EventCenter.RemoveListener<GameObject, string, string>(EventSendType.InspectorChange, InspectorChange);
+
+        EventCenter.RemoveListener(EventSendType.RefreshInspector, Refresh);
     }
     /// <summary>
     /// 根据选中物体生成对应的结构

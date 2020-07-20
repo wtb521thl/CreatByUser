@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -51,14 +52,29 @@ public class RightMousePanel : MonoBehaviour
     /// <param name="go"></param>
     void InstanceComponentObj(GameObject go)
     {
+
+
         GameObject tempInstanceObjResource = ResourceManager.Instance.GetGameobject(PathStatic.PrefabsComponentsPath + go.name);
         if (tempInstanceObjResource != null)
         {
-            GameObject tempInstanceObj = Instantiate(tempInstanceObjResource,UiManager.Instance.objContainer);
-            tempInstanceObj.GetComponent<RectTransform>().position = Input.mousePosition;
-            tempInstanceObj.name = go.name;
+            InstanceObjReciver reciver = new InstanceObjReciver();
+            reciver.obj = tempInstanceObjResource;
+            reciver.DoAction += FinishReciverAction;
+            reciver.parent = UiManager.Instance.objContainer;
+            Command c = new Command(reciver);
+            CommadManager.Instance.AddCommand(c);
+            CommadManager.Instance.ExcuteAllCommand();
+            //GameObject tempInstanceObj = Instantiate(tempInstanceObjResource,UiManager.Instance.objContainer);
+            //tempInstanceObj.GetComponent<RectTransform>().position = Input.mousePosition;
+            //tempInstanceObj.name = go.name;
         }
     }
+
+    private void FinishReciverAction(GameObject obj)
+    {
+        obj.GetComponent<RectTransform>().position = Input.mousePosition;
+    }
+
     Vector2 mousePos;
     void Update()
     {

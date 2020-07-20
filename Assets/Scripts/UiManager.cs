@@ -64,11 +64,18 @@ public class UiManager : SingleMono<UiManager>
 
 
         EventCenter.AddListener<GameManager.GameMode>(EventSendType.ChangeGameMode, ChangeGameMode);
+        EventCenter.AddListener(EventSendType.RefreshSelectObj, RefreshSelectObj);
+
         SwitchInspectorPanel(GameManager.Instance.GetGameMode());
         ChangeActiveByModel(GameManager.Instance.GetGameMode());
         GetActions();
     }
 
+    private void RefreshSelectObj()
+    {
+
+        ShowInspectorPanel();
+    }
 
     void ChangeActiveByModel(GameManager.GameMode gameMode)
     {
@@ -262,6 +269,7 @@ public class UiManager : SingleMono<UiManager>
     private void OnDestroy()
     {
         EventCenter.RemoveListener<GameManager.GameMode>(EventSendType.ChangeGameMode, ChangeGameMode);
+        EventCenter.RemoveListener(EventSendType.RefreshSelectObj, RefreshSelectObj);
     }
     private void ChangeGameMode(GameManager.GameMode arg1)
     {
@@ -299,7 +307,12 @@ public class UiManager : SingleMono<UiManager>
     /// </summary>
     void ShowInspectorPanel()
     {
-
+        if (GameManager.Instance.selectGameobject == null&& inspectorPanelScript!=null)
+        {
+            inspectorPanelScript = null;
+            DestroyImmediate(inspectorPanel);
+            return;
+        }
         if (GameManager.Instance.selectGameobject != GameManager.Instance.lastSelectGameObject)
         {
             CloseInspectorPanel();

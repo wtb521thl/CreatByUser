@@ -176,6 +176,7 @@ public class ComponentItem : MonoBehaviour,AllComponentMethods
     /// </summary>
     void InsOutLine()
     {
+        DeleteAllOutLines();
         outLines.Add(OutLineManager.Instance.GetOutLine("Up"));
         outLines.Add(OutLineManager.Instance.GetOutLine("Right"));
         outLines.Add(OutLineManager.Instance.GetOutLine("Down"));

@@ -123,26 +123,31 @@ namespace Inspector
         private void NameInputFieldChangeValue(string arg0)
         {
             EventCenter.BroadcastEvent<GameObject, string, string>(EventSendType.InspectorChange, selectObj, "Name", arg0);
+            EventCenter.BroadcastEvent(EventSendType.RefreshInspector);
         }
 
         private void VectorXInputFieldChangeValue(string arg0)
         {
             EventCenter.BroadcastEvent<GameObject, string, string>(EventSendType.InspectorChange, selectObj, "PosVectorX", arg0);
+            EventCenter.BroadcastEvent(EventSendType.RefreshInspector);
         }
 
         private void VectorYInputFieldChangeValue(string arg0)
         {
             EventCenter.BroadcastEvent<GameObject, string, string>(EventSendType.InspectorChange, selectObj, "PosVectorY", arg0);
+            EventCenter.BroadcastEvent(EventSendType.RefreshInspector);
         }
 
         private void SizeXInputFieldChangeValue(string arg0)
         {
             EventCenter.BroadcastEvent<GameObject, string, string>(EventSendType.InspectorChange, selectObj, "SizeVectorX", arg0);
+            EventCenter.BroadcastEvent(EventSendType.RefreshInspector);
         }
 
         private void SizeYInputFieldChangeValue(string arg0)
         {
             EventCenter.BroadcastEvent<GameObject, string, string>(EventSendType.InspectorChange, selectObj, "SizeVectorY", arg0);
+            EventCenter.BroadcastEvent(EventSendType.RefreshInspector);
         }
 
 
@@ -169,7 +174,8 @@ namespace Inspector
             List<Dropdown.OptionData> ods = new List<Dropdown.OptionData>();
             for (int i = 0; i < parent.childCount; i++)
             {
-                ods.Add(new Dropdown.OptionData(parent.GetChild(i).name.ToString()));
+                if(parent.GetChild(i).gameObject.activeSelf)
+                    ods.Add(new Dropdown.OptionData(parent.GetChild(i).name.ToString()));
             }
             drop.options = ods;
         }

@@ -66,10 +66,12 @@ namespace Inspector
         private void UserInputFieldChangeValue(string arg0)
         {
             EventCenter.BroadcastEvent<GameObject, string, string>(EventSendType.InspectorChange, selectObj, "UserInput", arg0 );
+            EventCenter.BroadcastEvent(EventSendType.RefreshInspector);
         }
         private void FontSizeInputFieldChangeValue(string arg0)
         {
             EventCenter.BroadcastEvent<GameObject, string, string>(EventSendType.InspectorChange, selectObj, "FontSize", arg0);
+            EventCenter.BroadcastEvent(EventSendType.RefreshInspector);
         }
 
     }
