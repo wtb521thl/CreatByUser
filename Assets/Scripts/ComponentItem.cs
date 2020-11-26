@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Tianbo.Wang;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -177,15 +178,15 @@ public class ComponentItem : MonoBehaviour,AllComponentMethods
     void InsOutLine()
     {
         DeleteAllOutLines();
-        outLines.Add(OutLineManager.Instance.GetOutLine("Up"));
-        outLines.Add(OutLineManager.Instance.GetOutLine("Right"));
-        outLines.Add(OutLineManager.Instance.GetOutLine("Down"));
-        outLines.Add(OutLineManager.Instance.GetOutLine("Left"));
-        outLines.Add(OutLineManager.Instance.GetOutLine("LeftUp"));
-        outLines.Add(OutLineManager.Instance.GetOutLine("RightUp"));
-        outLines.Add(OutLineManager.Instance.GetOutLine("LeftDown"));
-        outLines.Add(OutLineManager.Instance.GetOutLine("RightDown"));
-        outLines.Add(OutLineManager.Instance.GetOutLine("Middle"));
+        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject,"Up"));
+        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "Right"));
+        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "Down"));
+        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "Left"));
+        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "LeftUp"));
+        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "RightUp"));
+        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "LeftDown"));
+        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "RightDown"));
+        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "Middle"));
         for (int i = 0; i < outLines.Count; i++)
         {
             outLines[i].Init(gameObject);
@@ -194,26 +195,13 @@ public class ComponentItem : MonoBehaviour,AllComponentMethods
 
     private void Update()
     {
-        Refresh();
+
         for (int i = 0; i < outLines.Count; i++)
         {
-            outLines[i].RefreshRect(points, 5,Color.green);
+            outLines[i].RefreshRect(5,Color.green);
         }
     }
-    /// <summary>
-    /// 物体的四个边界顶点
-    /// </summary>
-    Vector2[] points;
-    /// <summary>
-    /// 刷新获取四周的点（当前使用物体的rectTransform，后续可改为bounds）
-    /// </summary>
-    void Refresh()
-    {
-        Rect rect = selfRect.rect;
-        rect.position = (Vector2)selfRect.position - rect.size / 2f;
-        points = new Vector2[5];
-        GetCornerPoint(rect, out points[0], out points[1], out points[2], out points[3]);
-    }
+
     /// <summary>
     /// 在编辑器中画出线
     /// </summary>

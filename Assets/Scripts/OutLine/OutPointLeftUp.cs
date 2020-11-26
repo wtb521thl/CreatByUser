@@ -5,27 +5,33 @@ using UnityEngine.UI;
 
 namespace Tianbo.Wang
 {
-    public class OutLineUp : OutLine
+    public class OutPointLeftUp : OutLine
     {
-
         protected override void SetAnchoredPos()
         {
-
+            selfRect.anchorMax = new Vector2(1, 0);
+            selfRect.anchorMin = new Vector2(1, 0);
         }
+
         public override void RefreshRect(float lineWidth, Color lineColor)
         {
-            lineObjRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, selfRect.GetSize().x);
-            lineObjRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, lineWidth);
-            lineObjRect.position = new Vector2(selfRect.GetCenter().x , selfRect.GetCenter().y+ selfRect.GetSize().y / 2f);
+            lineObjRect.sizeDelta = new Vector2(lineWidth * 2, lineWidth * 2);
+            lineObjRect.position = selfRect.GetCenter() + new Vector3(-selfRect.GetSize().x / 2f, selfRect.GetSize().y / 2f, 0);
             lineObjRect.GetComponent<Image>().color = lineColor;
         }
+
         protected override void GetStartDragObjPos()
         {
-            startDragObjPosY = selfRect.GetCenter().y - selfRect.GetSize().y / 2f;
+            startDragObjPosX = -selfRect.anchoredPosition.x - selfRect.sizeDelta.x / 2f;
+
+            startDragObjPosY = selfRect.anchoredPosition.y - selfRect.sizeDelta.y / 2f;
         }
         protected override void DragLine()
         {
             base.DragLine();
+            newObjDisX = startDragObjSizeDeltaX - (Input.mousePosition.x - startDragMousePos.x);
+            selfRect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Right, startDragObjPosX, newObjDisX);
+
             newObjDisY = startDragObjSizeDeltaY + (Input.mousePosition.y - startDragMousePos.y);
             selfRect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Bottom, startDragObjPosY, newObjDisY);
         }

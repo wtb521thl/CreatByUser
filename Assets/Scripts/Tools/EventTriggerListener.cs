@@ -6,14 +6,14 @@ using UnityEngine.EventSystems;
 
 public class EventTriggerListener : EventTrigger
 {
-    public Action OnMouseDown;
-    public Action OnMouseUp;
-    public Action OnMouseClick;
-    public Action OnMouseDrag;
-    public Action OnMouseBeginDrag;
-    public Action OnMouseEndDrag;
-    public Action OnMouseEnter;
-    public Action OnMouseExit;
+    public Action<GameObject> OnMouseDown;
+    public Action<GameObject> OnMouseUp;
+    public Action<GameObject> OnMouseClick;
+    public Action<GameObject> OnMouseDrag;
+    public Action<GameObject> OnMouseBeginDrag;
+    public Action<GameObject> OnMouseEndDrag;
+    public Action<GameObject> OnMouseEnter;
+    public Action<GameObject> OnMouseExit;
 
     public static EventTriggerListener Get(GameObject go)
     {
@@ -27,34 +27,34 @@ public class EventTriggerListener : EventTrigger
 
     public override void OnPointerDown(PointerEventData eventData)
     {
-        OnMouseDown?.Invoke();
+        OnMouseDown?.Invoke(gameObject);
     }
     public override void OnPointerClick(PointerEventData eventData)
     {
-        OnMouseClick?.Invoke();
+        OnMouseClick?.Invoke(gameObject);
     }
     public override void OnPointerUp(PointerEventData eventData)
     {
-        OnMouseUp?.Invoke();
+        OnMouseUp?.Invoke(gameObject);
     }
     public override void OnDrag(PointerEventData eventData)
     {
-        OnMouseDrag?.Invoke();
+        OnMouseDrag?.Invoke(gameObject);
     }
     public override void OnPointerEnter(PointerEventData eventData)
     {
-        OnMouseEnter?.Invoke();
+        OnMouseEnter?.Invoke(gameObject);
     }
     public override void OnPointerExit(PointerEventData eventData)
     {
-        OnMouseExit?.Invoke();
+        OnMouseExit?.Invoke(gameObject);
     }
     public override void OnBeginDrag(PointerEventData eventData)
     {
-        OnMouseBeginDrag?.Invoke();
+        OnMouseBeginDrag?.Invoke(gameObject);
     }
     public override void OnEndDrag(PointerEventData eventData)
     {
-        OnMouseEndDrag?.Invoke();
+        OnMouseEndDrag?.Invoke(gameObject);
     }
 }
