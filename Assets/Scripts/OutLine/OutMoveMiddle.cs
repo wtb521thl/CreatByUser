@@ -10,8 +10,7 @@ namespace Tianbo.Wang
 
         protected override void SetAnchoredPos()
         {
-            selfRect.anchorMax = new Vector2(0.5f, 0.5f);
-            selfRect.anchorMin = new Vector2(0.5f, 0.5f);
+
         }
 
         public override void RefreshRect(float lineWidth, Color lineColor)

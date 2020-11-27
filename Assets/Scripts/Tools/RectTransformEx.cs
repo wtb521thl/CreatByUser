@@ -49,7 +49,7 @@ public static class RectTransformEx
         return size;
     }
 
-    public static void GetCornersLocal(this RectTransform selfTrans, Vector3[] fourCornersArray)
+    static void GetCornersLocal(this RectTransform selfTrans, Vector3[] fourCornersArray)
     {
         if (fourCornersArray == null || fourCornersArray.Length < 4)
         {
@@ -69,7 +69,7 @@ public static class RectTransformEx
         fourCornersArray[3] = new Vector3(x1, y0, 0f);
     }
 
-    public static void GetCornersWorld(this RectTransform selfTrans, Vector3[] fourCornersArray)
+    static void GetCornersWorld(this RectTransform selfTrans, Vector3[] fourCornersArray)
     {
         if (fourCornersArray == null || fourCornersArray.Length < 4)
         {

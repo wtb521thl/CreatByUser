@@ -178,15 +178,16 @@ public class ComponentItem : MonoBehaviour,AllComponentMethods
     void InsOutLine()
     {
         DeleteAllOutLines();
-        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject,"Up"));
-        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "Right"));
-        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "Down"));
-        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "Left"));
-        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "LeftUp"));
-        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "RightUp"));
-        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "LeftDown"));
-        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "RightDown"));
-        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "Middle"));
+        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "OutLineLeft"));
+        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "OutLineRight"));
+        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "OutLineUp"));
+        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "OutLineDown"));
+
+        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "OutPointLeftUp"));
+        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "OutPointRightUp"));
+        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "OutPointLeftDown"));
+        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "OutPointRightDown"));
+        outLines.Add(OutLineManager.Instance.GetOutLine(gameObject, "OutMoveMiddle"));
         for (int i = 0; i < outLines.Count; i++)
         {
             outLines[i].Init(gameObject);

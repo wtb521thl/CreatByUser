@@ -83,7 +83,7 @@ public class RightMousePanel : MonoBehaviour
         {
             InitObj();
             mousePos = (Vector2)Input.mousePosition;
-            rightMousePanel.anchoredPosition = mousePos - new Vector2(0, Screen.height);
+            rightMousePanel.position = mousePos;
         }
 
         if (rightMousePanel != null)

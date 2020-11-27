@@ -10,22 +10,23 @@ namespace Tianbo.Wang
 
         protected override void SetAnchoredPos()
         {
-            selfRect.anchorMax = new Vector2(1, 1);
-            selfRect.anchorMin = new Vector2(1, 1);
+
         }
 
         public override void RefreshRect(float lineWidth, Color lineColor)
         {
-            lineObjRect.sizeDelta = new Vector2(lineWidth * 2, lineWidth * 2);
-            lineObjRect.position = selfRect.GetCenter() - new Vector3(selfRect.GetSize().x / 2f, selfRect.GetSize().y / 2f, 0);
+            lineObjRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, lineWidth * 2);
+            lineObjRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, lineWidth * 2);
+            lineObjRect.position = new Vector2(selfRect.GetCenter().x - selfRect.GetSize().x / 2f, selfRect.GetCenter().y - selfRect.GetSize().y / 2f);
             lineObjRect.GetComponent<Image>().color = lineColor;
         }
 
         protected override void GetStartDragObjPos()
         {
-            startDragObjPosX = -selfRect.anchoredPosition.x - selfRect.sizeDelta.x / 2f;
 
-            startDragObjPosY = -selfRect.anchoredPosition.y - selfRect.sizeDelta.y / 2f;
+            startDragObjPosX = selfRect.parent.GetRectTransform().GetCenter().x + selfRect.parent.GetRectTransform().GetSize().x / 2f - (selfRect.GetCenter().x + selfRect.GetSize().x / 2f);
+
+            startDragObjPosY = selfRect.parent.GetRectTransform().GetCenter().y + selfRect.parent.GetRectTransform().GetSize().y / 2f - (selfRect.GetCenter().y + selfRect.GetSize().y / 2f);
         }
         protected override void DragLine()
         {
